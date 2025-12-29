@@ -25,38 +25,54 @@
       --shadow2: 0 10px 30px rgba(0,0,0,.35);
       --r:18px;
     }
+
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
       margin:0;
       font-family: ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
       color:var(--text);
+      background: linear-gradient(180deg, var(--bg0), var(--bg1));
+      -webkit-font-smoothing:antialiased;
+      -webkit-text-size-adjust:100%;
+      overflow-x:hidden;
+    }
+
+    /* Stable background layer (fixes artifacts on desktop) */
+    body::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
       background:
         radial-gradient(1200px 800px at 20% 10%, rgba(89,195,255,.20), transparent 60%),
         radial-gradient(900px 700px at 80% 30%, rgba(75,227,209,.14), transparent 55%),
         radial-gradient(900px 700px at 60% 90%, rgba(255,92,122,.10), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      -webkit-font-smoothing:antialiased;
-      -webkit-text-size-adjust:100%;
+      transform: translateZ(0);
+      will-change: transform;
     }
+
     .wrap{
-      max-width: 980px;
+      max-width: 1020px;
       margin: 0 auto;
       padding: 18px 14px 48px;
     }
+
     .topbar{
       position: sticky;
       top: 0;
       z-index: 10;
-      padding: 12px 0;
-      backdrop-filter: blur(10px);
-      background: linear-gradient(180deg, rgba(5,9,20,.72), rgba(5,9,20,0));
+      padding: 12px 0 10px;
+      background: linear-gradient(180deg, rgba(5,9,20,.92), rgba(5,9,20,.62), rgba(5,9,20,0));
     }
+
     .brand{
       display:flex;
       align-items:center;
       gap:12px;
     }
+
     .logo{
       width:42px; height:42px;
       border-radius: 14px;
@@ -68,6 +84,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.45);
       position:relative;
       overflow:hidden;
+      flex: 0 0 auto;
     }
     .logo:after{
       content:"";
@@ -77,16 +94,57 @@
       filter: blur(10px);
       opacity:.8;
     }
+
     h1{ font-size: 18px; margin:0; letter-spacing:.3px; }
     .subtitle{ margin:2px 0 0; color:var(--muted2); font-size: 13px; line-height: 1.25; }
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 14px;
-      align-items:start;
+    .tabsRow{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top: 12px;
     }
-    @media (max-width: 920px){ .grid{ grid-template-columns: 1fr; } }
+
+    .tab{
+      border:1px solid rgba(89,195,255,.22);
+      color: rgba(234,242,255,.86);
+      background: rgba(89,195,255,.08);
+      padding: 10px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-size: 13px;
+      letter-spacing:.2px;
+      user-select:none;
+      transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .tab:hover{ filter: brightness(1.06); }
+    .tab:active{ transform: translateY(1px); }
+    .tab.active{
+      background: linear-gradient(180deg, rgba(89,195,255,.26), rgba(89,195,255,.12));
+      border-color: rgba(89,195,255,.40);
+      box-shadow: 0 14px 40px rgba(89,195,255,.10);
+    }
+    .tab[disabled]{
+      opacity:.45;
+      cursor:not-allowed;
+      filter:none;
+      transform:none;
+    }
+    .pill{
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(234,242,255,.12);
+      background: rgba(234,242,255,.06);
+      color: rgba(234,242,255,.78);
+      white-space: nowrap;
+    }
+    .pill.good{ border-color: rgba(60,224,122,.18); background: rgba(60,224,122,.10); color: rgba(234,242,255,.90); }
+    .pill.warn{ border-color: rgba(255,209,102,.20); background: rgba(255,209,102,.10); color: rgba(234,242,255,.90); }
+    .pill.bad{ border-color: rgba(255,92,122,.20); background: rgba(255,92,122,.10); color: rgba(234,242,255,.90); }
 
     .card{
       background: linear-gradient(180deg, rgba(11,23,48,.92), rgba(10,20,43,.90));
@@ -94,6 +152,7 @@
       border-radius: var(--r);
       box-shadow: var(--shadow2);
       overflow:hidden;
+      margin-top: 14px;
     }
     .cardHead{
       padding: 14px 16px 12px;
@@ -102,6 +161,7 @@
       gap:10px;
       align-items:flex-start;
       justify-content:space-between;
+      flex-wrap:wrap;
     }
     .cardTitle{ font-size: 14px; margin:0; letter-spacing:.2px; }
     .badge{
@@ -174,6 +234,17 @@
       box-shadow: 0 0 0 4px rgba(89,195,255,.10);
     }
 
+    /* FIX: native dropdown white-on-white */
+    select{
+      background-color: rgba(234,242,255,.06);
+      color: rgba(234,242,255,.92);
+      border: 1px solid rgba(140,195,255,.16);
+    }
+    select option{
+      background-color: #0b162e;
+      color: #eaf2ff;
+    }
+
     .row{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -187,6 +258,7 @@
       gap:10px;
       flex-wrap:wrap;
       margin-top: 12px;
+      align-items:center;
     }
     .btn{
       border:1px solid rgba(89,195,255,.25);
@@ -217,6 +289,42 @@
       border-color: rgba(255,92,122,.25);
       color: rgba(234,242,255,.88);
     }
+    .btn[disabled]{
+      opacity:.45;
+      cursor:not-allowed;
+      filter:none;
+      transform:none;
+    }
+
+    .seg{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .segLabel{
+      color: var(--muted2);
+      font-size: 12px;
+      margin-right: 2px;
+    }
+    .segBtn{
+      border:1px solid rgba(234,242,255,.12);
+      background: rgba(234,242,255,.06);
+      color: rgba(234,242,255,.80);
+      padding: 8px 10px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-size: 13px;
+      user-select:none;
+      transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
+    }
+    .segBtn:hover{ filter: brightness(1.06); }
+    .segBtn:active{ transform: translateY(1px); }
+    .segBtn.active{
+      border-color: rgba(89,195,255,.35);
+      background: rgba(89,195,255,.12);
+      color: rgba(234,242,255,.92);
+    }
 
     .outBlock{
       padding: 12px 12px 14px;
@@ -224,6 +332,11 @@
       border: 1px solid rgba(140,195,255,.12);
       background: rgba(5,9,20,.35);
       margin-bottom: 10px;
+      animation: fadeIn .18s ease;
+    }
+    @keyframes fadeIn{
+      from{ opacity: 0; transform: translateY(2px); }
+      to{ opacity: 1; transform: translateY(0); }
     }
     .outTitle{
       display:flex;
@@ -233,6 +346,8 @@
       font-size: 13px;
       color: rgba(234,242,255,.92);
       letter-spacing:.2px;
+      justify-content:space-between;
+      flex-wrap:wrap;
     }
     .dot{
       width: 10px; height: 10px; border-radius: 999px;
@@ -283,6 +398,36 @@
       opacity: 1;
       transform: translateX(-50%) translateY(-2px);
     }
+
+    .hidden{ display:none !important; }
+
+    .wizardShell{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .wizardTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom: 4px;
+    }
+    .progress{
+      color: rgba(234,242,255,.78);
+      font-size: 12px;
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(234,242,255,.14);
+      background: rgba(234,242,255,.06);
+      color: rgba(234,242,255,.86);
+    }
   </style>
 </head>
 
@@ -293,27 +438,48 @@
         <div class="logo" aria-hidden="true"></div>
         <div>
           <h1>Тренажёр баг-репортов</h1>
-          <p class="subtitle">Вопросы на русском → отчёт на английском + новые слова/чанки без повторов.</p>
+          <p class="subtitle">RU-вопросы → отчёт на EN + новые слова/чанки без повторов.</p>
+
+          <div class="tabsRow" role="tablist" aria-label="Навигация">
+            <button class="tab active" id="tabInput" type="button" data-tab="input">
+              Ввод <span class="pill" id="modePill">Форма</span>
+            </button>
+            <button class="tab" id="tabResult" type="button" data-tab="result">
+              Результат <span class="pill" id="resPill">—</span>
+            </button>
+            <button class="tab" id="tabVocab" type="button" data-tab="vocab" disabled>
+              Словарь <span class="pill" id="vocPill">0</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="grid">
-      <!-- LEFT -->
-      <section class="card">
-        <div class="cardHead">
-          <div>
-            <p class="cardTitle">Шаг 1 — ответь на вопросы</p>
-            <p class="subtitle" style="margin:6px 0 0;">UI-текст в кавычках: <span class="badge">"Sign in"</span> <span class="badge">"Save"</span></p>
-          </div>
-          <div class="badge">RU → EN</div>
+    <!-- INPUT TAB -->
+    <section class="card" id="panelInput" role="tabpanel">
+      <div class="cardHead">
+        <div>
+          <p class="cardTitle">Ввод</p>
+          <p class="subtitle" style="margin:6px 0 0;">
+            UI-текст в кавычках: <span class="badge">"Sign in"</span> <span class="badge">"Save"</span>
+          </p>
         </div>
 
-        <div class="cardBody">
-          <p class="hint">
-            Если баг визуальный — в <code>Что ты сделал?</code> достаточно «Открыл экран X и заметил…».
-          </p>
+        <div class="seg">
+          <span class="segLabel">Режим ввода:</span>
+          <button class="segBtn active" id="modeForm" type="button">Форма</button>
+          <button class="segBtn" id="modeWizard" type="button">По шагам</button>
+        </div>
+      </div>
 
+      <div class="cardBody">
+        <p class="hint">
+          Подсказка: визуальный баг = достаточно «Открыл экран X и заметил…».<br/>
+          В режиме “По шагам”: <span class="kbd">Enter</span> = далее, <span class="kbd">Shift+Enter</span> = новая строка.
+        </p>
+
+        <!-- FORM MODE -->
+        <div id="formMode">
           <div class="q">
             <label><span class="n">1</span> Что ты сделал?</label>
             <textarea id="q1" placeholder='Например: Открыл приложение и нажал "Sign in".'></textarea>
@@ -364,60 +530,133 @@
           </div>
 
           <div class="btnRow">
-            <button class="btn primary" id="gen">Сгенерировать</button>
-            <button class="btn ghost" id="demo">Демо-пример</button>
-            <button class="btn danger" id="resetVocab">Сбросить словарь</button>
+            <button class="btn primary" id="genForm" type="button">Сгенерировать</button>
+            <button class="btn ghost" id="demo" type="button">Демо</button>
+            <button class="btn" id="newReport" type="button">Новый отчёт</button>
+            <button class="btn danger" id="resetVocab" type="button">Сбросить словарь</button>
           </div>
 
           <div class="small">
             “Словарь без повторов” хранится в этом браузере (localStorage).
           </div>
         </div>
-      </section>
 
-      <!-- RIGHT -->
-      <section class="card">
-        <div class="cardHead">
-          <div>
-            <p class="cardTitle">Шаг 2 — результат</p>
-            <p class="subtitle" style="margin:6px 0 0;">Copy копирует только новые слова/фразы.</p>
-          </div>
-          <div class="badge">Output</div>
-        </div>
-
-        <div class="cardBody">
-          <div class="outBlock">
-            <div class="outTitle"><span class="dot"></span> Bug Report (EN)</div>
-            <pre id="outEN">—</pre>
-          </div>
-
-          <div class="outBlock">
-            <div class="outTitle"><span class="dot good"></span> Перевод (RU)</div>
-            <pre id="outRU">—</pre>
-          </div>
-
-          <div class="outBlock">
-            <div class="outTitle"><span class="dot warn"></span> Vocabulary (new)</div>
-            <pre id="outV">—</pre>
-            <div class="btnRow" style="margin-top:10px;">
-              <button class="btn primary" id="copy">Copy</button>
+        <!-- WIZARD MODE -->
+        <div id="wizardMode" class="hidden">
+          <div class="wizardShell">
+            <div class="wizardTop">
+              <div class="progress" id="wizProgress">Шаг 1/7</div>
+              <div class="seg">
+                <span class="segLabel">Подсказка:</span>
+                <span class="pill">Enter = далее</span>
+                <span class="pill">Shift+Enter = новая строка</span>
+              </div>
             </div>
+
+            <div class="q" id="wizBox">
+              <label id="wizLabel"><span class="n" id="wizN">1</span> —</label>
+              <div id="wizField"></div>
+              <div class="small" id="wizHelp"></div>
+            </div>
+
+            <div class="btnRow">
+              <button class="btn ghost" id="wizBack" type="button">Назад</button>
+              <button class="btn primary" id="wizNext" type="button">Далее</button>
+              <button class="btn primary hidden" id="wizGen" type="button">Сгенерировать</button>
+
+              <button class="btn" id="newReport2" type="button">Новый отчёт</button>
+              <button class="btn danger" id="resetVocab2" type="button">Сбросить словарь</button>
+            </div>
+
             <div class="small">
-              Формат: <code>english — русский</code>, по строкам.
+              Режим “По шагам” не меняет данные — можно переключиться обратно в “Форму” в любой момент.
             </div>
           </div>
+        </div>
 
-          <div class="small">
-            Хочешь “идеальный английский” (RU→EN)? Для публичного продукта ключ нельзя держать в браузере — нужен прокси/сервер. :contentReference[oaicite:2]{index=2}
+      </div>
+    </section>
+
+    <!-- RESULT TAB -->
+    <section class="card hidden" id="panelResult" role="tabpanel">
+      <div class="cardHead">
+        <div>
+          <p class="cardTitle">Результат</p>
+          <p class="subtitle" style="margin:6px 0 0;">Переключай EN/RU. Если есть новые слова — появится кнопка “Перейти в словарь”.</p>
+        </div>
+
+        <div class="seg">
+          <span class="segLabel">Показать:</span>
+          <button class="segBtn active" id="showEN" type="button">EN</button>
+          <button class="segBtn" id="showRU" type="button">RU</button>
+        </div>
+      </div>
+
+      <div class="cardBody">
+        <div class="outBlock" id="blockEN">
+          <div class="outTitle">
+            <span style="display:flex; align-items:center; gap:10px;"><span class="dot"></span> Bug Report (EN)</span>
+            <span class="pill" id="sevPill">—</span>
+          </div>
+          <pre id="outEN">—</pre>
+        </div>
+
+        <div class="outBlock hidden" id="blockRU">
+          <div class="outTitle">
+            <span style="display:flex; align-items:center; gap:10px;"><span class="dot good"></span> Перевод (RU)</span>
+            <span class="pill" id="envPill">—</span>
+          </div>
+          <pre id="outRU">—</pre>
+        </div>
+
+        <div class="outBlock" id="blockAfter">
+          <div class="outTitle"><span style="display:flex; align-items:center; gap:10px;"><span class="dot warn"></span> Что дальше</span></div>
+          <div class="small" id="afterText">—</div>
+
+          <div class="btnRow">
+            <button class="btn primary" id="goVocab" type="button" disabled>Перейти в словарь</button>
+            <button class="btn" id="newReport3" type="button">Новый отчёт</button>
           </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
+
+    <!-- VOCAB TAB -->
+    <section class="card hidden" id="panelVocab" role="tabpanel">
+      <div class="cardHead">
+        <div>
+          <p class="cardTitle">Словарь (только новое)</p>
+          <p class="subtitle" style="margin:6px 0 0;">Формат для вставки: <span class="badge">english — русский</span></p>
+        </div>
+        <div class="badge">Copy</div>
+      </div>
+
+      <div class="cardBody">
+        <div class="outBlock">
+          <div class="outTitle"><span style="display:flex; align-items:center; gap:10px;"><span class="dot warn"></span> Vocabulary (new)</span>
+            <span class="pill" id="vocCountPill">0</span>
+          </div>
+          <pre id="outV">—</pre>
+
+          <div class="btnRow" style="margin-top:10px;">
+            <button class="btn primary" id="copy" type="button">Copy</button>
+            <button class="btn" id="newReport4" type="button">Новый отчёт</button>
+            <button class="btn danger" id="resetVocab3" type="button">Сбросить словарь</button>
+          </div>
+
+          <div class="small" id="copyHint">
+            Если новых слов нет — вкладка “Словарь” будет отключена.
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <div class="toast" id="toast">OK</div>
 
 <script>
+  // ---------- utils ----------
   const $ = (id) => document.getElementById(id);
 
   function toast(msg){
@@ -441,9 +680,67 @@
     return [...new Set(matches)];
   }
 
+  // ---------- app state ----------
+  const state = {
+    tab: "input",           // input | result | vocab
+    inputMode: "form",      // form | wizard
+    wizardStep: 0,
+    lastVocabLines: "",
+    lastVocabCount: 0,
+    lastSeverity: "Medium",
+    lastEnv: ""
+  };
+
+  // ---------- tabs ----------
+  const tabs = {
+    input: { btn: $("tabInput"), panel: $("panelInput") },
+    result:{ btn: $("tabResult"), panel: $("panelResult") },
+    vocab: { btn: $("tabVocab"), panel: $("panelVocab") }
+  };
+
+  function setTab(name){
+    state.tab = name;
+    Object.entries(tabs).forEach(([k, o]) => {
+      o.btn.classList.toggle("active", k === name);
+      o.panel.classList.toggle("hidden", k !== name);
+    });
+    if(name === "input"){
+      focusFirstInput();
+    }
+  }
+
+  function focusFirstInput(){
+    if(state.inputMode === "form"){
+      $("q1").focus();
+    }else{
+      wizardFocus();
+    }
+  }
+
+  function setVocabEnabled(enabled){
+    $("tabVocab").disabled = !enabled;
+  }
+
+  // ---------- input mode switch ----------
+  function setInputMode(mode){
+    state.inputMode = mode;
+    $("modeForm").classList.toggle("active", mode === "form");
+    $("modeWizard").classList.toggle("active", mode === "wizard");
+    $("formMode").classList.toggle("hidden", mode !== "form");
+    $("wizardMode").classList.toggle("hidden", mode !== "wizard");
+    $("modePill").textContent = (mode === "form") ? "Форма" : "По шагам";
+    if(mode === "wizard"){
+      renderWizard();
+    }
+    focusFirstInput();
+  }
+
+  $("modeForm").addEventListener("click", ()=>setInputMode("form"));
+  $("modeWizard").addEventListener("click", ()=>setInputMode("wizard"));
+
+  // ---------- location RU -> EN ----------
   function ruLocationToEn(locRu){
     const s = (locRu || "").trim().toLowerCase();
-
     const dict = new Map([
       ["на главном экране", "the main screen"],
       ["главный экран", "the main screen"],
@@ -458,18 +755,16 @@
       ["экран входа", "the login screen"],
       ["логин", "the login screen"]
     ]);
-
     if (dict.has(s)) return dict.get(s);
 
-    // Если человек ввёл на английском — пропускаем
-    const hasCyrillic = /[а-яё]/i.test(locRu || "");
-    if (!hasCyrillic && locRu) return locRu;
+    const hasCyr = /[а-яё]/i.test(locRu || "");
+    if (!hasCyr && locRu) return locRu; // already EN-ish
 
     return "the specified screen";
   }
 
   // ---------- vocab engine ----------
-  const LS_KEY = "bugTrainer_knownVocab_v2";
+  const LS_KEY = "bugTrainer_knownVocab_v3";
 
   function loadKnown(){
     try{
@@ -492,6 +787,7 @@
     "should","could","would","can","may","might","will"
   ]);
 
+  // Phrases/Chunks (shown once)
   const FIXED_TERMS = new Map([
     ["Steps to reproduce", "Шаги воспроизведения"],
     ["Actual result", "Фактический результат"],
@@ -504,12 +800,16 @@
     ["should appear", "должно появиться"],
     ["should be", "должно быть"],
     ["could be", "могло бы быть"],
+    ["unable to", "не удаётся"],
+    ["fails to", "не выполняет / не удаётся"],
+
     ["the app freezes", "приложение зависает"],
     ["the app crashes", "приложение падает (краш)"],
-    ["unable to", "не удаётся"],
-    ["fails to", "не выполняет / не удаётся"]
+    ["error message", "сообщение об ошибке"],
+    ["ui elements overlap", "элементы интерфейса перекрываются"]
   ]);
 
+  // Single words (only known words to avoid мусор)
   const WORDS = new Map([
     ["button","кнопка"],
     ["screen","экран"],
@@ -544,10 +844,10 @@
     else if (w.endsWith("ed") && w.length > 4) w = w.slice(0,-2);
     else if (w.endsWith("es") && w.length > 4) w = w.slice(0,-2);
     else if (w.endsWith("s") && w.length > 3) w = w.slice(0,-1);
-    // normalize common variants
-    if (w === "overlaps") w = "overlap";
+
     if (w === "freezes") w = "freeze";
     if (w === "crashes") w = "crash";
+    if (w === "overlaps") w = "overlap";
     if (w === "misspelled") w = "misspell";
     return w;
   }
@@ -556,12 +856,11 @@
     const found = [];
     const lower = enReport.toLowerCase();
 
-    // fixed phrases
     for (const [k, ru] of FIXED_TERMS.entries()){
       if (lower.includes(k.toLowerCase())) found.push({en:k, ru});
     }
 
-    // single words (only those we know, to avoid мусор)
+    // single words
     const rawTokens = enReport.split(/\s+/g).map(t=>t.replace(/[.,:;()"]/g,""));
     for(const t of rawTokens){
       const n = normalizeToken(t);
@@ -662,26 +961,43 @@
     return lines.join("\n");
   }
 
-  function generate(){
-    const q1 = cleanSpaces($("q1").value);
-    const q2 = cleanSpaces($("q2").value);
-    const q3 = cleanSpaces($("q3").value);
-    const q4 = cleanSpaces($("q4").value);
-    const severity = $("q5").value;
-    const env = cleanSpaces($("env").value);
-    const type = $("type").value;
+  function gatherInputs(){
+    return {
+      q1: cleanSpaces($("q1").value),
+      q2: cleanSpaces($("q2").value),
+      q3: cleanSpaces($("q3").value),
+      q4: cleanSpaces($("q4").value),
+      severity: $("q5").value,
+      env: cleanSpaces($("env").value),
+      type: $("type").value
+    };
+  }
 
-    if(!q2 || !q3){
-      toast("Заполни хотя бы: Что произошло + Что должно было произойти");
-      return;
+  function validateInputs(data){
+    if(!data.q2 || !data.q3){
+      toast("Заполни: Что произошло + Что должно было произойти");
+      return false;
     }
+    return true;
+  }
 
-    const en = buildEN({q1,q2,q3,q4,severity,env,type});
-    const ru = buildRU({q1,q2,q3,q4,severity,env});
+  function generate(){
+    const data = gatherInputs();
+    if(!validateInputs(data)) return;
+
+    state.lastSeverity = data.severity;
+    state.lastEnv = data.env;
+
+    const en = buildEN(data);
+    const ru = buildRU(data);
 
     $("outEN").textContent = en;
     $("outRU").textContent = ru;
 
+    $("sevPill").textContent = `Severity: ${data.severity}`;
+    $("envPill").textContent = data.env ? `Env: ${data.env}` : "Env: —";
+
+    // vocab (dedupe)
     const known = loadKnown();
     const vocabItems = collectVocab(en);
 
@@ -695,16 +1011,95 @@
     }
     saveKnown(known);
 
-    $("outV").textContent = (newItems.length === 0)
-      ? "— нет новых слов/фраз (всё уже было)"
-      : newItems.map(x => `${x.en} — ${x.ru}`).join("\n");
+    const lines = newItems.map(x => `${x.en} — ${x.ru}`).join("\n");
+    state.lastVocabLines = lines;
+    state.lastVocabCount = newItems.length;
+
+    // update pills
+    $("vocPill").textContent = String(state.lastVocabCount);
+    $("vocCountPill").textContent = String(state.lastVocabCount);
+
+    // result tab extra logic
+    const hasNew = state.lastVocabCount > 0;
+    setVocabEnabled(hasNew);
+    $("goVocab").disabled = !hasNew;
+
+    if(hasNew){
+      $("afterText").innerHTML =
+        `Есть <b>${state.lastVocabCount}</b> новых слов/чанков. Нажми “Перейти в словарь”, скопируй и вставь в своё приложение.`;
+      $("tabVocab").disabled = false;
+      $("outV").textContent = state.lastVocabLines;
+      $("copy").disabled = false;
+    }else{
+      $("afterText").textContent =
+        `Новых слов нет — всё уже было в твоём словаре. Можно сразу делать “Новый отчёт”.`;
+      $("outV").textContent = "—";
+      $("copy").disabled = true;
+      $("tabVocab").disabled = true;
+    }
+
+    // result marker
+    $("resPill").textContent = "Готово";
+
+    // show result tab (do NOT auto-jump to vocab)
+    setTab("result");
+    // default show EN
+    setResultView("en");
 
     toast("Готово");
   }
 
-  $("gen").addEventListener("click", generate);
+  // ---------- result view toggle ----------
+  function setResultView(which){
+    const en = (which === "en");
+    $("showEN").classList.toggle("active", en);
+    $("showRU").classList.toggle("active", !en);
+    $("blockEN").classList.toggle("hidden", !en);
+    $("blockRU").classList.toggle("hidden", en);
+  }
+  $("showEN").addEventListener("click", ()=>setResultView("en"));
+  $("showRU").addEventListener("click", ()=>setResultView("ru"));
 
-  $("demo").addEventListener("click", () => {
+  // ---------- new report ----------
+  function newReport(){
+    // Clear text fields only, keep severity/type (as agreed)
+    $("q1").value = "";
+    $("q2").value = "";
+    $("q3").value = "";
+    $("q4").value = "";
+    $("env").value = "";
+
+    // reset result pills
+    $("resPill").textContent = "—";
+
+    // keep last vocab state? no, clear last-session display
+    state.lastVocabLines = "";
+    state.lastVocabCount = 0;
+
+    $("vocPill").textContent = "0";
+    $("vocCountPill").textContent = "0";
+    setVocabEnabled(false);
+    $("outV").textContent = "—";
+    $("copy").disabled = true;
+
+    // return to input
+    setTab("input");
+    if(state.inputMode === "wizard"){
+      state.wizardStep = 0;
+      renderWizard();
+    }
+    focusFirstInput();
+    toast("Новый отчёт");
+  }
+
+  // ---------- reset vocab ----------
+  function resetVocab(){
+    localStorage.removeItem(LS_KEY);
+    toast("Словарь сброшен");
+  }
+
+  // ---------- demo ----------
+  function demo(){
     $("q1").value = 'Открыл приложение и нажал кнопку "Sign in".';
     $("q2").value = "Ничего не произошло, приложение зависло.";
     $("q3").value = "Должно было появиться окно логина и пароля.";
@@ -712,12 +1107,13 @@
     $("q5").value = "High";
     $("env").value = "iPhone 13, iOS 18.2, App v1.2.0";
     $("type").value = "crash";
-    generate();
-  });
+    toast("Демо заполнено");
+  }
 
-  $("copy").addEventListener("click", async () => {
-    const text = $("outV").textContent.trim();
-    if(!text || text === "—" || text.startsWith("— нет")){
+  // ---------- copy ----------
+  async function copyVocab(){
+    const text = (state.lastVocabLines || "").trim();
+    if(!text){
       toast("Нечего копировать");
       return;
     }
@@ -733,13 +1129,194 @@
       document.body.removeChild(ta);
       toast("Copied");
     }
+  }
+
+  // ---------- tabs events ----------
+  function bindTabClicks(){
+    Object.entries(tabs).forEach(([name, o])=>{
+      o.btn.addEventListener("click", ()=>{
+        if(o.btn.disabled) return;
+        setTab(name);
+      });
+    });
+  }
+
+  // ---------- wizard ----------
+  const WIZ_STEPS = [
+    {
+      key: "q1",
+      label: "Что ты сделал?",
+      help: 'Можно коротко. UI-текст в кавычках: "Sign in", "Save".',
+      type: "textarea",
+      placeholder: 'Например: Открыл приложение и нажал "Sign in".'
+    },
+    {
+      key: "q2",
+      label: "Что произошло?",
+      help: "Факт без эмоций. Например: ничего не произошло / зависло / ошибка.",
+      type: "textarea",
+      placeholder: "Например: Ничего не произошло, приложение зависло."
+    },
+    {
+      key: "q3",
+      label: "Что должно было произойти?",
+      help: "Ожидание. Например: должно было открыться окно логина.",
+      type: "textarea",
+      placeholder: "Например: Должно было появиться окно логина и пароля."
+    },
+    {
+      key: "q4",
+      label: "Где это произошло? (по-русски)",
+      help: "Например: на главном экране / профиль / настройки.",
+      type: "input",
+      placeholder: "Например: на главном экране"
+    },
+    {
+      key: "q5",
+      label: "Насколько это критично?",
+      help: "Выбери уровень критичности.",
+      type: "select",
+      options: [
+        ["Low","Низко"],
+        ["Medium","Средне"],
+        ["High","Высоко"],
+        ["Critical","Критично"]
+      ]
+    },
+    {
+      key: "env",
+      label: "Окружение (по желанию)",
+      help: "Устройство/браузер/версия приложения. Можно пропустить.",
+      type: "input",
+      placeholder: "Например: iPhone 13, iOS 18.2, App v1.2.0"
+    },
+    {
+      key: "type",
+      label: "Тип бага",
+      help: "Выбери тип.",
+      type: "select",
+      options: [
+        ["functional","Функциональный"],
+        ["ui","UI/Дизайн"],
+        ["typo","Орфография/Текст"],
+        ["crash","Краш/Зависание"]
+      ]
+    }
+  ];
+
+  function renderWizard(){
+    const idx = state.wizardStep;
+    const step = WIZ_STEPS[idx];
+
+    $("wizProgress").textContent = `Шаг ${idx+1}/${WIZ_STEPS.length}`;
+    $("wizN").textContent = String(idx+1);
+    $("wizLabel").innerHTML = `<span class="n" id="wizN">${idx+1}</span> ${step.label}`;
+    $("wizHelp").textContent = step.help || "";
+
+    // Build field
+    const host = $("wizField");
+    host.innerHTML = "";
+
+    let el;
+    if(step.type === "textarea"){
+      el = document.createElement("textarea");
+      el.placeholder = step.placeholder || "";
+      el.value = $(step.key).value;
+      el.addEventListener("input", ()=>{ $(step.key).value = el.value; });
+    }else if(step.type === "input"){
+      el = document.createElement("input");
+      el.placeholder = step.placeholder || "";
+      el.value = $(step.key).value;
+      el.addEventListener("input", ()=>{ $(step.key).value = el.value; });
+    }else if(step.type === "select"){
+      el = document.createElement("select");
+      step.options.forEach(([val, txt])=>{
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = txt;
+        el.appendChild(opt);
+      });
+      el.value = $(step.key).value;
+      el.addEventListener("change", ()=>{ $(step.key).value = el.value; });
+    }
+    el.id = "wizActiveField";
+    host.appendChild(el);
+
+    // Buttons state
+    $("wizBack").disabled = (idx === 0);
+    const last = (idx === WIZ_STEPS.length - 1);
+    $("wizNext").classList.toggle("hidden", last);
+    $("wizGen").classList.toggle("hidden", !last);
+
+    // Enter behavior
+    el.addEventListener("keydown", (e)=>{
+      if(e.key !== "Enter") return;
+
+      // For textarea: Shift+Enter = newline
+      if(step.type === "textarea" && e.shiftKey) return;
+
+      e.preventDefault();
+      if(last){
+        generate();
+      }else{
+        wizardNext();
+      }
+    });
+  }
+
+  function wizardFocus(){
+    const el = $("wizActiveField");
+    if(el) el.focus();
+  }
+
+  function wizardNext(){
+    if(state.wizardStep < WIZ_STEPS.length - 1){
+      state.wizardStep += 1;
+      renderWizard();
+      wizardFocus();
+    }
+  }
+  function wizardBack(){
+    if(state.wizardStep > 0){
+      state.wizardStep -= 1;
+      renderWizard();
+      wizardFocus();
+    }
+  }
+
+  $("wizNext").addEventListener("click", wizardNext);
+  $("wizBack").addEventListener("click", wizardBack);
+  $("wizGen").addEventListener("click", generate);
+
+  // ---------- bindings ----------
+  bindTabClicks();
+
+  $("genForm").addEventListener("click", generate);
+  $("demo").addEventListener("click", demo);
+
+  // New report buttons (all)
+  ["newReport","newReport2","newReport3","newReport4"].forEach(id=>{
+    $(id).addEventListener("click", newReport);
   });
 
-  $("resetVocab").addEventListener("click", () => {
-    localStorage.removeItem(LS_KEY);
-    $("outV").textContent = "— словарь сброшен";
-    toast("Сброшено");
+  // Reset vocab buttons (all)
+  ["resetVocab","resetVocab2","resetVocab3"].forEach(id=>{
+    $(id).addEventListener("click", resetVocab);
   });
+
+  $("goVocab").addEventListener("click", ()=>{
+    if($("tabVocab").disabled) return;
+    setTab("vocab");
+  });
+
+  $("copy").addEventListener("click", copyVocab);
+
+  // Set initial state
+  setTab("input");
+  setInputMode("form");
+  setVocabEnabled(false);
+  $("resPill").textContent = "—";
+
 </script>
 </body>
 </html>
