@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Bug Report Trainer</title>
+  <meta name="theme-color" content="#071221" />
+
+  <style>
+    :root{
+      --bg0:#050914;
+      --bg1:#071221;
+      --card:#0B1730;
+      --card2:#0A142B;
+      --line:rgba(140,195,255,.14);
+      --text:#EAF2FF;
+      --muted:rgba(234,242,255,.72);
+      --muted2:rgba(234,242,255,.55);
+      --accent:#59C3FF;
+      --accent2:#4BE3D1;
+      --good:#3CE07A;
+      --warn:#FFD166;
+      --bad:#FF5C7A;
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --shadow2: 0 10px 30px rgba(0,0,0,.35);
+      --r:18px;
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(89,195,255,.20), transparent 60%),
+        radial-gradient(900px 700px at 80% 30%, rgba(75,227,209,.14), transparent 55%),
+        radial-gradient(900px 700px at 60% 90%, rgba(255,92,122,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      -webkit-font-smoothing:antialiased;
+      -webkit-text-size-adjust:100%;
+    }
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 18px 14px 48px;
+    }
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 12px 0;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(5,9,20,.72), rgba(5,9,20,0));
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .logo{
+      width:42px; height:42px;
+      border-radius: 14px;
+      background:
+        radial-gradient(18px 18px at 60% 35%, rgba(255,255,255,.25), transparent 60%),
+        radial-gradient(40px 40px at 30% 20%, rgba(89,195,255,.32), transparent 60%),
+        linear-gradient(180deg, rgba(89,195,255,.30), rgba(11,23,48,.10));
+      border:1px solid rgba(89,195,255,.25);
+      box-shadow: 0 10px 30px rgba(0,0,0,.45);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-40% -40%;
+      background: conic-gradient(from 220deg, rgba(89,195,255,.0), rgba(89,195,255,.35), rgba(75,227,209,.25), rgba(89,195,255,.0));
+      transform: rotate(10deg);
+      filter: blur(10px);
+      opacity:.8;
+    }
+    h1{ font-size: 18px; margin:0; letter-spacing:.3px; }
+    .subtitle{ margin:2px 0 0; color:var(--muted2); font-size: 13px; line-height: 1.25; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 920px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card{
+      background: linear-gradient(180deg, rgba(11,23,48,.92), rgba(10,20,43,.90));
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding: 14px 16px 12px;
+      border-bottom:1px solid rgba(140,195,255,.10);
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+    }
+    .cardTitle{ font-size: 14px; margin:0; letter-spacing:.2px; }
+    .badge{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(89,195,255,.22);
+      color:rgba(234,242,255,.85);
+      background: rgba(89,195,255,.08);
+      white-space:nowrap;
+    }
+    .cardBody{ padding: 14px 16px 16px; }
+
+    .hint{
+      margin: 0 0 12px;
+      color: var(--muted2);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .hint code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      padding:2px 6px;
+      border-radius:8px;
+      background: rgba(89,195,255,.10);
+      border:1px solid rgba(89,195,255,.15);
+      color: rgba(234,242,255,.92);
+    }
+
+    .q{
+      padding: 12px;
+      border: 1px solid rgba(140,195,255,.12);
+      border-radius: 14px;
+      background: rgba(5,9,20,.35);
+      margin-bottom: 10px;
+    }
+    .q label{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      color: rgba(234,242,255,.90);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .n{
+      width: 22px; height: 22px;
+      border-radius: 8px;
+      display:grid; place-items:center;
+      background: rgba(89,195,255,.14);
+      border: 1px solid rgba(89,195,255,.22);
+      color: rgba(234,242,255,.92);
+      font-size: 12px;
+      flex: 0 0 auto;
+    }
+
+    textarea, input, select{
+      width:100%;
+      background: rgba(234,242,255,.06);
+      border: 1px solid rgba(140,195,255,.16);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 12px;
+      outline: none;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    textarea{ min-height: 54px; resize: vertical; }
+    textarea:focus, input:focus, select:focus{
+      border-color: rgba(89,195,255,.38);
+      box-shadow: 0 0 0 4px rgba(89,195,255,.10);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    @media (max-width:520px){ .row{ grid-template-columns: 1fr; } }
+
+    .btnRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .btn{
+      border:1px solid rgba(89,195,255,.25);
+      color: rgba(234,242,255,.92);
+      background: rgba(89,195,255,.10);
+      padding: 11px 14px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-size:14px;
+      letter-spacing:.2px;
+      transition: transform .08s ease, filter .12s ease, background .12s ease, border-color .12s ease;
+      user-select:none;
+    }
+    .btn:hover{ filter: brightness(1.06); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(89,195,255,.30), rgba(89,195,255,.14));
+      border-color: rgba(89,195,255,.40);
+      box-shadow: 0 14px 40px rgba(89,195,255,.10);
+    }
+    .btn.ghost{
+      background: transparent;
+      border-color: rgba(234,242,255,.12);
+      color: rgba(234,242,255,.75);
+    }
+    .btn.danger{
+      background: rgba(255,92,122,.10);
+      border-color: rgba(255,92,122,.25);
+      color: rgba(234,242,255,.88);
+    }
+
+    .outBlock{
+      padding: 12px 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(140,195,255,.12);
+      background: rgba(5,9,20,.35);
+      margin-bottom: 10px;
+    }
+    .outTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: rgba(234,242,255,.92);
+      letter-spacing:.2px;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(89,195,255,.12);
+      flex: 0 0 auto;
+    }
+    .dot.good{ background: var(--good); box-shadow: 0 0 0 4px rgba(60,224,122,.10); }
+    .dot.warn{ background: var(--warn); box-shadow: 0 0 0 4px rgba(255,209,102,.10); }
+
+    pre{
+      margin:0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.45;
+      color: rgba(234,242,255,.92);
+    }
+
+    .small{
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.35;
+      margin-top: 8px;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(10,20,43,.92);
+      border: 1px solid rgba(89,195,255,.20);
+      color: rgba(234,242,255,.92);
+      padding: 10px 12px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 99;
+      max-width: min(520px, calc(100vw - 24px));
+      text-align:center;
+      font-size: 13px;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Тренажёр баг-репортов</h1>
+          <p class="subtitle">Вопросы на русском → отчёт на английском + новые слова/чанки без повторов.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT -->
+      <section class="card">
+        <div class="cardHead">
+          <div>
+            <p class="cardTitle">Шаг 1 — ответь на вопросы</p>
+            <p class="subtitle" style="margin:6px 0 0;">UI-текст в кавычках: <span class="badge">"Sign in"</span> <span class="badge">"Save"</span></p>
+          </div>
+          <div class="badge">RU → EN</div>
+        </div>
+
+        <div class="cardBody">
+          <p class="hint">
+            Если баг визуальный — в <code>Что ты сделал?</code> достаточно «Открыл экран X и заметил…».
+          </p>
+
+          <div class="q">
+            <label><span class="n">1</span> Что ты сделал?</label>
+            <textarea id="q1" placeholder='Например: Открыл приложение и нажал "Sign in".'></textarea>
+          </div>
+
+          <div class="q">
+            <label><span class="n">2</span> Что произошло?</label>
+            <textarea id="q2" placeholder="Например: Ничего не произошло / зависло / ошибка / текст перекрыт."></textarea>
+          </div>
+
+          <div class="q">
+            <label><span class="n">3</span> Что должно было произойти?</label>
+            <textarea id="q3" placeholder="Например: Должно было открыться окно логина и пароля."></textarea>
+          </div>
+
+          <div class="row">
+            <div class="q" style="margin:0;">
+              <label><span class="n">4</span> Где это произошло? (по-русски)</label>
+              <input id="q4" placeholder="Например: на главном экране / в настройках / на странице профиля." />
+            </div>
+
+            <div class="q" style="margin:0;">
+              <label><span class="n">5</span> Насколько это критично?</label>
+              <select id="q5">
+                <option value="Low">Низко</option>
+                <option value="Medium" selected>Средне</option>
+                <option value="High">Высоко</option>
+                <option value="Critical">Критично</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="q" style="margin:0;">
+              <label><span class="n">6</span> Окружение (по желанию)</label>
+              <input id="env" placeholder='Например: iPhone 13, iOS 18.2, App v1.4.0 / Chrome 127, Windows 11.' />
+            </div>
+
+            <div class="q" style="margin:0;">
+              <label><span class="n">7</span> Тип бага</label>
+              <select id="type">
+                <option value="functional" selected>Функциональный</option>
+                <option value="ui">UI/Дизайн</option>
+                <option value="typo">Орфография/Текст</option>
+                <option value="crash">Краш/Зависание</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btnRow">
+            <button class="btn primary" id="gen">Сгенерировать</button>
+            <button class="btn ghost" id="demo">Демо-пример</button>
+            <button class="btn danger" id="resetVocab">Сбросить словарь</button>
+          </div>
+
+          <div class="small">
+            “Словарь без повторов” хранится в этом браузере (localStorage).
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT -->
+      <section class="card">
+        <div class="cardHead">
+          <div>
+            <p class="cardTitle">Шаг 2 — результат</p>
+            <p class="subtitle" style="margin:6px 0 0;">Copy копирует только новые слова/фразы.</p>
+          </div>
+          <div class="badge">Output</div>
+        </div>
+
+        <div class="cardBody">
+          <div class="outBlock">
+            <div class="outTitle"><span class="dot"></span> Bug Report (EN)</div>
+            <pre id="outEN">—</pre>
+          </div>
+
+          <div class="outBlock">
+            <div class="outTitle"><span class="dot good"></span> Перевод (RU)</div>
+            <pre id="outRU">—</pre>
+          </div>
+
+          <div class="outBlock">
+            <div class="outTitle"><span class="dot warn"></span> Vocabulary (new)</div>
+            <pre id="outV">—</pre>
+            <div class="btnRow" style="margin-top:10px;">
+              <button class="btn primary" id="copy">Copy</button>
+            </div>
+            <div class="small">
+              Формат: <code>english — русский</code>, по строкам.
+            </div>
+          </div>
+
+          <div class="small">
+            Хочешь “идеальный английский” (RU→EN)? Для публичного продукта ключ нельзя держать в браузере — нужен прокси/сервер. :contentReference[oaicite:2]{index=2}
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">OK</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  function toast(msg){
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"), 1200);
+  }
+
+  function cleanSpaces(s){ return (s||"").replace(/\s+/g," ").trim(); }
+
+  function extractQuotedUI(text){
+    const t = text || "";
+    const matches = [];
+    const re = /["“«](.+?)["”»]/g;
+    let m;
+    while ((m = re.exec(t)) !== null){
+      const v = cleanSpaces(m[1]);
+      if (v && v.length <= 50) matches.push(v);
+    }
+    return [...new Set(matches)];
+  }
+
+  function ruLocationToEn(locRu){
+    const s = (locRu || "").trim().toLowerCase();
+
+    const dict = new Map([
+      ["на главном экране", "the main screen"],
+      ["главный экран", "the main screen"],
+      ["на главной странице", "the main page"],
+      ["главная страница", "the main page"],
+      ["на странице профиля", "the profile page"],
+      ["страница профиля", "the profile page"],
+      ["профиль", "the profile page"],
+      ["на странице настроек", "the settings page"],
+      ["на экране настроек", "the settings screen"],
+      ["настройки", "the settings screen"],
+      ["экран входа", "the login screen"],
+      ["логин", "the login screen"]
+    ]);
+
+    if (dict.has(s)) return dict.get(s);
+
+    // Если человек ввёл на английском — пропускаем
+    const hasCyrillic = /[а-яё]/i.test(locRu || "");
+    if (!hasCyrillic && locRu) return locRu;
+
+    return "the specified screen";
+  }
+
+  // ---------- vocab engine ----------
+  const LS_KEY = "bugTrainer_knownVocab_v2";
+
+  function loadKnown(){
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return new Set(arr);
+    }catch{
+      return new Set();
+    }
+  }
+  function saveKnown(set){
+    localStorage.setItem(LS_KEY, JSON.stringify([...set]));
+  }
+
+  const STOP = new Set([
+    "the","a","an","to","of","and","or","in","on","at","with","for","from","into","by","as",
+    "is","are","was","were","be","been","being","it","this","that","these","those","there",
+    "i","you","we","they","he","she","my","your","our","their","his","her",
+    "do","does","did","not","no","yes","but","if","then","than","when","while","because",
+    "should","could","would","can","may","might","will"
+  ]);
+
+  const FIXED_TERMS = new Map([
+    ["Steps to reproduce", "Шаги воспроизведения"],
+    ["Actual result", "Фактический результат"],
+    ["Expected result", "Ожидаемый результат"],
+    ["Environment", "Окружение"],
+    ["Title", "Заголовок"],
+
+    ["does not respond", "не реагирует"],
+    ["nothing happens", "ничего не происходит"],
+    ["should appear", "должно появиться"],
+    ["should be", "должно быть"],
+    ["could be", "могло бы быть"],
+    ["the app freezes", "приложение зависает"],
+    ["the app crashes", "приложение падает (краш)"],
+    ["unable to", "не удаётся"],
+    ["fails to", "не выполняет / не удаётся"]
+  ]);
+
+  const WORDS = new Map([
+    ["button","кнопка"],
+    ["screen","экран"],
+    ["page","страница"],
+    ["profile","профиль"],
+    ["settings","настройки"],
+    ["login","вход"],
+    ["save","сохранить"],
+    ["submit","отправить"],
+    ["error","ошибка"],
+    ["message","сообщение"],
+    ["freeze","зависает"],
+    ["crash","краш / падение"],
+    ["unresponsive","не реагирует"],
+    ["overlap","перекрывает"],
+    ["typo","опечатка"],
+    ["misspell","написать с ошибкой"],
+    ["appear","появиться"],
+    ["unexpected","неожиданно"],
+    ["expected","ожидаемый"],
+    ["actual","фактический"],
+    ["reproduce","воспроизвести"],
+    ["steps","шаги"],
+    ["result","результат"],
+    ["environment","окружение"]
+  ]);
+
+  function normalizeToken(w){
+    w = (w||"").toLowerCase().replace(/[^a-z0-9\-]+/g,"").trim();
+    if(!w) return "";
+    if (w.endsWith("ing") && w.length > 5) w = w.slice(0,-3);
+    else if (w.endsWith("ed") && w.length > 4) w = w.slice(0,-2);
+    else if (w.endsWith("es") && w.length > 4) w = w.slice(0,-2);
+    else if (w.endsWith("s") && w.length > 3) w = w.slice(0,-1);
+    // normalize common variants
+    if (w === "overlaps") w = "overlap";
+    if (w === "freezes") w = "freeze";
+    if (w === "crashes") w = "crash";
+    if (w === "misspelled") w = "misspell";
+    return w;
+  }
+
+  function collectVocab(enReport){
+    const found = [];
+    const lower = enReport.toLowerCase();
+
+    // fixed phrases
+    for (const [k, ru] of FIXED_TERMS.entries()){
+      if (lower.includes(k.toLowerCase())) found.push({en:k, ru});
+    }
+
+    // single words (only those we know, to avoid мусор)
+    const rawTokens = enReport.split(/\s+/g).map(t=>t.replace(/[.,:;()"]/g,""));
+    for(const t of rawTokens){
+      const n = normalizeToken(t);
+      if(!n || STOP.has(n)) continue;
+      if (n.length < 3) continue;
+      const ru = WORDS.get(n);
+      if(!ru) continue;
+      found.push({en:n, ru});
+    }
+
+    // unique
+    const uniq = new Map();
+    for(const item of found){
+      const key = item.en.toLowerCase();
+      if(!uniq.has(key)) uniq.set(key, item);
+    }
+    return [...uniq.values()];
+  }
+
+  // ---------- report generation ----------
+  function guessTitle(type, uiTexts, q2ru){
+    const primary = uiTexts[0] ? `"${uiTexts[0]}"` : "Button";
+    if(type === "crash") return `${primary} causes the app to freeze`;
+    if(type === "ui") return `${primary} UI issue on screen`;
+    if(type === "typo") return `Typo on screen`;
+    const t = (q2ru||"").toLowerCase();
+    if (t.includes("не реаг") || t.includes("ничего") || t.includes("не происходит")) return `${primary} does not respond`;
+    return `${primary} behaves incorrectly`;
+  }
+
+  function buildEN({q1,q2,q3,q4,severity,env,type}){
+    const uiFromAll = [...new Set([
+      ...extractQuotedUI(q1),
+      ...extractQuotedUI(q2),
+      ...extractQuotedUI(q3),
+      ...extractQuotedUI(q4),
+    ])];
+
+    const title = guessTitle(type, uiFromAll, q2);
+
+    const steps = [];
+    const locEn = q4 ? ruLocationToEn(q4) : "";
+    steps.push(locEn ? `Open ${locEn}.` : `Open the application.`);
+    if(uiFromAll[0]) steps.push(`Click "${uiFromAll[0]}".`);
+    else steps.push(`Perform the described action.`);
+
+    let actual = "Unexpected behavior occurs.";
+    let expected = "The expected behavior should occur.";
+
+    const q2l = (q2||"").toLowerCase();
+    if (q2l.includes("не реаг") ) actual = `The button does not respond.`;
+    if (q2l.includes("ничего") || q2l.includes("не происходит")) actual = "Nothing happens.";
+    if (q2l.includes("завис")) actual = "The app freezes.";
+    if (q2l.includes("краш") || q2l.includes("вылет") || q2l.includes("падает")) actual = "The app crashes.";
+    if (q2l.includes("ошибк")) actual = "An error message appears.";
+    if (q2l.includes("перекры") || q2l.includes("наезж")) actual = "UI elements overlap.";
+
+    const q3l = (q3||"").toLowerCase();
+    if (q3l.includes("появ") || q3l.includes("откры")) expected = "The expected screen/window should appear.";
+    if (q3l.includes("сохран")) expected = "The data should be saved successfully.";
+    if (q3l.includes("войти") || q3l.includes("логин") || q3l.includes("парол")) expected = "The login screen should appear.";
+    if (q3l.includes("не перекры") || q3l.includes("не наезж")) expected = "UI elements should not overlap.";
+
+    const lines = [];
+    lines.push(`Title: ${title}`);
+    lines.push("");
+    lines.push("Steps to reproduce:");
+    steps.forEach((s,i)=>lines.push(`${i+1}. ${s}`));
+    lines.push("");
+    lines.push("Actual result:");
+    lines.push(actual);
+    lines.push("");
+    lines.push("Expected result:");
+    lines.push(expected);
+    lines.push("");
+    lines.push(`Severity: ${severity}`);
+    if(env) lines.push(`Environment: ${env}`);
+
+    return lines.join("\n");
+  }
+
+  function buildRU({q1,q2,q3,q4,severity,env}){
+    const lines = [];
+    lines.push(`Заголовок: ${cleanSpaces(q2) ? cleanSpaces(q2) : "Некорректное поведение"}`);
+    lines.push("");
+    lines.push("Шаги воспроизведения:");
+    lines.push(`1. ${q4 ? "Открыть " + q4 : "Открыть приложение"}`);
+    lines.push(`2. ${cleanSpaces(q1) ? cleanSpaces(q1) : "Выполнить действие"}`);
+    lines.push("");
+    lines.push("Фактический результат:");
+    lines.push(cleanSpaces(q2) || "Происходит некорректное поведение.");
+    lines.push("");
+    lines.push("Ожидаемый результат:");
+    lines.push(cleanSpaces(q3) || "Ожидаемое поведение.");
+    lines.push("");
+    lines.push(`Критичность: ${severity}`);
+    if (env) lines.push(`Окружение: ${env}`);
+    return lines.join("\n");
+  }
+
+  function generate(){
+    const q1 = cleanSpaces($("q1").value);
+    const q2 = cleanSpaces($("q2").value);
+    const q3 = cleanSpaces($("q3").value);
+    const q4 = cleanSpaces($("q4").value);
+    const severity = $("q5").value;
+    const env = cleanSpaces($("env").value);
+    const type = $("type").value;
+
+    if(!q2 || !q3){
+      toast("Заполни хотя бы: Что произошло + Что должно было произойти");
+      return;
+    }
+
+    const en = buildEN({q1,q2,q3,q4,severity,env,type});
+    const ru = buildRU({q1,q2,q3,q4,severity,env});
+
+    $("outEN").textContent = en;
+    $("outRU").textContent = ru;
+
+    const known = loadKnown();
+    const vocabItems = collectVocab(en);
+
+    const newItems = [];
+    for(const it of vocabItems){
+      const key = it.en.toLowerCase();
+      if(!known.has(key)){
+        newItems.push(it);
+        known.add(key);
+      }
+    }
+    saveKnown(known);
+
+    $("outV").textContent = (newItems.length === 0)
+      ? "— нет новых слов/фраз (всё уже было)"
+      : newItems.map(x => `${x.en} — ${x.ru}`).join("\n");
+
+    toast("Готово");
+  }
+
+  $("gen").addEventListener("click", generate);
+
+  $("demo").addEventListener("click", () => {
+    $("q1").value = 'Открыл приложение и нажал кнопку "Sign in".';
+    $("q2").value = "Ничего не произошло, приложение зависло.";
+    $("q3").value = "Должно было появиться окно логина и пароля.";
+    $("q4").value = "на главном экране";
+    $("q5").value = "High";
+    $("env").value = "iPhone 13, iOS 18.2, App v1.2.0";
+    $("type").value = "crash";
+    generate();
+  });
+
+  $("copy").addEventListener("click", async () => {
+    const text = $("outV").textContent.trim();
+    if(!text || text === "—" || text.startsWith("— нет")){
+      toast("Нечего копировать");
+      return;
+    }
+    try{
+      await navigator.clipboard.writeText(text);
+      toast("Copied");
+    }catch{
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      toast("Copied");
+    }
+  });
+
+  $("resetVocab").addEventListener("click", () => {
+    localStorage.removeItem(LS_KEY);
+    $("outV").textContent = "— словарь сброшен";
+    toast("Сброшено");
+  });
+</script>
+</body>
+</html>
