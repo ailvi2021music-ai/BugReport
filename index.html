@@ -32,12 +32,8 @@
       -webkit-font-smoothing:antialiased;
       -webkit-text-size-adjust:100%;
       overflow-x:hidden;
-
-      /* FIX: скрываем "текстовый курсор" по клику в пустых местах страницы */
-      caret-color: transparent;
+      caret-color: transparent; /* скрывает курсор в пустых местах */
     }
-
-    /* Но в реальных полях ввода курсор нужен */
     textarea, input, select{ caret-color: var(--text); }
 
     body::before{
@@ -52,7 +48,7 @@
         linear-gradient(180deg, var(--bg0), var(--bg1));
     }
 
-    /* Центрируем приложение по вертикали/горизонтали */
+    /* Центрируем приложение по экрану */
     .wrap{
       max-width: 680px;
       margin: 0 auto;
@@ -70,10 +66,8 @@
       border-radius: var(--r);
       box-shadow: var(--shadow2);
       overflow:hidden;
-      margin-top: 0; /* раньше был отступ сверху */
     }
 
-    /* Шапка нужна только вне "Ввода" (когда показываем кнопку Назад) */
     .cardHead{
       padding: 12px 14px 0;
       display:flex;
@@ -81,7 +75,6 @@
       justify-content:flex-start;
     }
 
-    /* Симметричный отступ сверху/снизу внутри рамки */
     .cardBody{ padding: 14px; }
 
     .hidden{ display:none !important; }
@@ -213,7 +206,20 @@
       color: rgba(234,242,255,.86);
     }
 
-    /* FIX: Переключатель режима без внешней "капсулы" */
+    /* DEMO -> круглая кнопка с ? */
+    .btnIcon{
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 999px;
+      display:grid;
+      place-items:center;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    /* Переключатель режима: без внешней капсулы */
     .modeToggle{
       border: none;
       background: transparent;
@@ -444,14 +450,13 @@
               </div>
             </div>
 
-            <!-- Нижний ряд: демо ближе, переключатель дальше -->
             <div class="btnRow split">
               <div class="btnGroup">
                 <button class="btn primary" id="genForm" type="button">Сгенерировать</button>
                 <button class="btn" id="newReport" type="button">Новый отчёт</button>
               </div>
               <div class="btnGroup">
-                <button class="btn ghost" id="demo" type="button">Демо</button>
+                <button class="btn ghost btnIcon" id="demo" type="button" aria-label="Демо" title="Демо">?</button>
                 <button class="modeToggle" id="modeToggle" type="button"
                         aria-label="Переключить режим (форма / по шагам)"
                         aria-pressed="false" title="Переключить режим">
@@ -486,7 +491,7 @@
                 </div>
 
                 <div class="btnGroup">
-                  <button class="btn ghost" id="demo2" type="button">Демо</button>
+                  <button class="btn ghost btnIcon" id="demo2" type="button" aria-label="Демо" title="Демо">?</button>
                   <button class="modeToggle on" id="modeToggle2" type="button"
                           aria-label="Переключить режим (форма / по шагам)"
                           aria-pressed="true" title="Переключить режим">
@@ -532,7 +537,8 @@
             <div class="small" id="afterText">—</div>
 
             <div class="btnRow">
-              <button class="btn primary" id="goVocab" type="button" disabled>Перейти в словарь</button>
+              <!-- FIX: всегда активна -->
+              <button class="btn primary" id="goVocab" type="button">Перейти в словарь</button>
               <button class="btn" id="newReport3" type="button">Новый отчёт</button>
             </div>
           </div>
@@ -540,19 +546,33 @@
 
         <!-- VOCAB PANEL -->
         <div id="panelVocab" class="hidden">
+
           <div class="outBlock">
             <div class="outTitle">
-              <span style="display:flex; align-items:center; gap:10px;"><span class="dot warn"></span> Vocabulary (new)</span>
-              <span class="small" id="vocCountPill">0</span>
+              <span style="display:flex; align-items:center; gap:10px;"><span class="dot warn"></span> Новые (этот отчёт)</span>
+              <span class="small" id="vocNewCountPill">0</span>
             </div>
-            <pre id="outV">—</pre>
+            <pre id="outVNew">—</pre>
 
             <div class="btnRow" style="margin-top:10px;">
-              <button class="btn primary" id="copy" type="button">Copy</button>
+              <button class="btn primary" id="copyNew" type="button">Copy new</button>
+            </div>
+          </div>
+
+          <div class="outBlock">
+            <div class="outTitle">
+              <span style="display:flex; align-items:center; gap:10px;"><span class="dot"></span> Все слова</span>
+              <span class="small" id="vocAllCountPill">0</span>
+            </div>
+            <pre id="outVAll">—</pre>
+
+            <div class="btnRow" style="margin-top:10px;">
+              <button class="btn primary" id="copyAll" type="button">Copy all</button>
               <button class="btn" id="newReport4" type="button">Новый отчёт</button>
               <button class="btn danger" id="resetVocab3" type="button">Сбросить словарь</button>
             </div>
           </div>
+
         </div>
 
       </div>
@@ -610,6 +630,10 @@
 
     $("cardHead").classList.toggle("hidden", name === "input");
 
+    if(name === "vocab"){
+      renderVocabPanel();
+    }
+
     if(name === "input") focusFirstInput();
   }
 
@@ -666,6 +690,26 @@
     else setTab("input");
   });
 
+  // ---------- FIX: убираем фокус/курсор при клике в "пустое место" внутри блока ----------
+  function blurIfClickedOnEmptyArea(e){
+    const q = e.target.closest(".q");
+    if(!q) return;
+
+    const interactive = e.target.closest("textarea, input, select, button");
+    if(interactive) return;
+
+    // Если фокус был в поле внутри этого блока — убираем, чтобы курсор не оставался
+    const ae = document.activeElement;
+    if(ae && q.contains(ae) && /^(TEXTAREA|INPUT|SELECT)$/.test(ae.tagName)){
+      ae.blur();
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  document.addEventListener("mousedown", blurIfClickedOnEmptyArea, true);
+  document.addEventListener("click", blurIfClickedOnEmptyArea, true);
+
   // ---------- location RU -> EN ----------
   function ruLocationToEn(locRu){
     const s = (locRu || "").trim().toLowerCase();
@@ -692,11 +736,12 @@
   }
 
   // ---------- vocab engine ----------
-  const LS_KEY = "bugTrainer_knownVocab_v4";
+  const LS_KEY_KNOWN = "bugTrainer_knownVocab_v4";     // чтобы не повторять "новые"
+  const LS_KEY_ALL   = "bugTrainer_allVocab_v1";       // накопительный словарь
 
   function loadKnown(){
     try{
-      const raw = localStorage.getItem(LS_KEY);
+      const raw = localStorage.getItem(LS_KEY_KNOWN);
       const arr = raw ? JSON.parse(raw) : [];
       return new Set(arr);
     }catch{
@@ -704,7 +749,21 @@
     }
   }
   function saveKnown(set){
-    localStorage.setItem(LS_KEY, JSON.stringify([...set]));
+    localStorage.setItem(LS_KEY_KNOWN, JSON.stringify([...set]));
+  }
+
+  function loadAllVocab(){
+    try{
+      const raw = localStorage.getItem(LS_KEY_ALL);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    }catch{
+      return [];
+    }
+  }
+
+  function saveAllVocab(arr){
+    localStorage.setItem(LS_KEY_ALL, JSON.stringify(arr));
   }
 
   const STOP = new Set([
@@ -910,6 +969,19 @@
     return true;
   }
 
+  function ensureAllVocabUnique(allArr){
+    const seen = new Set();
+    const out = [];
+    for(const line of allArr){
+      const key = String(line || "").toLowerCase().trim();
+      if(!key) continue;
+      if(seen.has(key)) continue;
+      seen.add(key);
+      out.push(line);
+    }
+    return out;
+  }
+
   function generate(){
     const data = gatherInputs();
     if(!validateInputs(data)) return;
@@ -923,6 +995,7 @@
     $("sevPill").textContent = `Severity: ${data.severity}`;
     $("envPill").textContent = data.env ? `Env: ${data.env}` : "Env: —";
 
+    // vocab: новые + накопительные
     const known = loadKnown();
     const vocabItems = collectVocab(en);
 
@@ -936,25 +1009,21 @@
     }
     saveKnown(known);
 
-    const lines = newItems.map(x => `${x.en} — ${x.ru}`).join("\n");
-    state.lastVocabLines = lines;
-    state.lastVocabCount = newItems.length;
+    const newLines = newItems.map(x => `${x.en} — ${x.ru}`);
+    state.lastVocabLines = newLines.join("\n");
+    state.lastVocabCount = newLines.length;
 
-    $("vocCountPill").textContent = String(state.lastVocabCount);
+    // накопительный список (все слова за всё время)
+    const all = loadAllVocab();
+    const merged = ensureAllVocabUnique(all.concat(newLines));
+    saveAllVocab(merged);
 
-    const hasNew = state.lastVocabCount > 0;
-    $("goVocab").disabled = !hasNew;
+    // pills + after
+    $("afterText").textContent = (state.lastVocabCount > 0)
+      ? `Добавлено новых: ${state.lastVocabCount}.`
+      : `Новых слов в этом отчёте нет.`;
 
-    if(hasNew){
-      $("afterText").innerHTML = `Есть <b>${state.lastVocabCount}</b> новых слов/чанков. Нажми “Перейти в словарь”.`;
-      $("outV").textContent = state.lastVocabLines;
-      $("copy").disabled = false;
-    }else{
-      $("afterText").textContent = `Новых слов нет — всё уже было. Можно сразу нажать “Новый отчёт”.`;
-      $("outV").textContent = "—";
-      $("copy").disabled = true;
-    }
-
+    // всегда можно идти в словарь
     setTab("result");
     setResultView("en");
     toast("Готово");
@@ -968,6 +1037,20 @@
     $("blockRU").classList.toggle("hidden", en);
   }
 
+  function renderVocabPanel(){
+    const newText = (state.lastVocabLines || "").trim();
+    const allArr = loadAllVocab();
+    const allText = allArr.join("\n").trim();
+
+    $("vocNewCountPill").textContent = String(state.lastVocabCount || 0);
+    $("outVNew").textContent = newText ? newText : "—";
+    $("copyNew").disabled = !newText;
+
+    $("vocAllCountPill").textContent = String(allArr.length);
+    $("outVAll").textContent = allText ? allText : "—";
+    $("copyAll").disabled = !allText;
+  }
+
   function newReport(){
     $("q1").value = "";
     $("q2").value = "";
@@ -978,11 +1061,6 @@
     state.lastVocabLines = "";
     state.lastVocabCount = 0;
     state.demoOn = false;
-
-    $("vocCountPill").textContent = "0";
-    $("outV").textContent = "—";
-    $("copy").disabled = true;
-    $("goVocab").disabled = true;
 
     setTab("input");
     if(state.inputMode === "wizard"){
@@ -995,7 +1073,13 @@
   }
 
   function resetVocab(){
-    localStorage.removeItem(LS_KEY);
+    localStorage.removeItem(LS_KEY_KNOWN);
+    localStorage.removeItem(LS_KEY_ALL);
+
+    state.lastVocabLines = "";
+    state.lastVocabCount = 0;
+
+    if(state.tab === "vocab") renderVocabPanel();
     toast("Словарь сброшен");
   }
 
@@ -1030,15 +1114,15 @@
     }
   }
 
-  async function copyVocab(){
-    const text = (state.lastVocabLines || "").trim();
-    if(!text){ toast("Нечего копировать"); return; }
+  async function copyText(text){
+    const t = (text || "").trim();
+    if(!t){ toast("Нечего копировать"); return; }
     try{
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(t);
       toast("Copied");
     }catch{
       const ta = document.createElement("textarea");
-      ta.value = text;
+      ta.value = t;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand("copy");
@@ -1127,18 +1211,11 @@
   function wizardNext(){ if(state.wizardStep < WIZ_STEPS.length - 1){ state.wizardStep += 1; renderWizard(); wizardFocus(); } }
   function wizardBack(){ if(state.wizardStep > 0){ state.wizardStep -= 1; renderWizard(); wizardFocus(); } }
 
-  function toggleMode(){
-    setInputMode(state.inputMode === "form" ? "wizard" : "form");
-  }
-
   // ---------- init ----------
   on("genForm","click", generate);
 
   on("demo","click", demo);
   on("demo2","click", demo);
-
-  on("modeToggle","click", toggleMode);
-  on("modeToggle2","click", toggleMode);
 
   on("showEN","click", ()=>setResultView("en"));
   on("showRU","click", ()=>setResultView("ru"));
@@ -1146,12 +1223,14 @@
   ["newReport","newReport2","newReport3","newReport4"].forEach(id=> on(id,"click", newReport));
 
   on("resetVocab3","click", resetVocab);
-  on("copy","click", copyVocab);
 
-  on("goVocab","click", ()=>{
-    if($("goVocab").disabled) return;
-    setTab("vocab");
+  on("copyNew","click", ()=>copyText(state.lastVocabLines || ""));
+  on("copyAll","click", ()=>{
+    const allText = loadAllVocab().join("\n");
+    copyText(allText);
   });
+
+  on("goVocab","click", ()=>setTab("vocab"));
 
   on("wizNext","click", wizardNext);
   on("wizBack","click", wizardBack);
@@ -1162,8 +1241,6 @@
   setTab("input");
   setInputMode("form");
   applyDynamicLabels();
-  $("goVocab").disabled = true;
-  $("copy").disabled = true;
 </script>
 </body>
 </html>
