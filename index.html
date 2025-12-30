@@ -160,6 +160,9 @@
       flex-wrap:wrap;
       align-items:center;
     }
+    .btnGroup.right{
+      justify-content:flex-end;
+    }
 
     .btn{
       border:1px solid rgba(89,195,255,.25);
@@ -320,40 +323,6 @@
 
     /* Wizard */
     .wizardShell{ display:flex; flex-direction:column; gap:10px; }
-    .wizardTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom: 4px;
-    }
-    .progress{
-      color: rgba(234,242,255,.78);
-      font-size: 12px;
-      user-select:none;
-      cursor: default;
-    }
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 12px;
-      padding: 2px 6px;
-      border-radius: 8px;
-      border: 1px solid rgba(234,242,255,.14);
-      background: rgba(234,242,255,.06);
-      color: rgba(234,242,255,.86);
-      user-select:none;
-      cursor: default;
-    }
-
-    /* Small top utility row */
-    .topRow{
-      display:flex;
-      justify-content:flex-end;
-      align-items:center;
-      gap:10px;
-      margin-bottom: 10px;
-    }
   </style>
 </head>
 
@@ -370,32 +339,20 @@
         <!-- INPUT PANEL -->
         <div id="panelInput">
 
-          <!-- small icon controls (no halos) -->
-          <div class="topRow">
-            <button class="iconBtn" id="reportModeBtn" type="button"
-              title="Режим репорта: увидел / действовал" aria-label="Режим репорта: увидел / действовал">👁️</button>
-
-            <button class="iconBtn" id="toggleInputModeBtn" type="button"
-              title="Переключить режим ввода: форма / по шагам" aria-label="Переключить режим ввода: форма / по шагам">⇄</button>
-
-            <button class="iconBtn" id="demo" type="button"
-              title="Демо: заполнить / очистить" aria-label="Демо: заполнить / очистить">?</button>
-          </div>
-
           <!-- FORM MODE -->
           <div id="formMode">
             <div class="q" id="q1Block">
-              <label><span class="n" id="n1">1</span> <span id="l1">Что ты сделал?</span></label>
+              <label><span class="n" id="n1">1</span> <span id="l1">Шаги / действия</span></label>
               <textarea id="q1"></textarea>
             </div>
 
             <div class="q" id="q2Block">
-              <label><span class="n" id="n2">2</span> <span id="l2">Что произошло?</span></label>
+              <label><span class="n" id="n2">2</span> <span id="l2">Наблюдаемое</span></label>
               <textarea id="q2"></textarea>
             </div>
 
             <div class="q" id="q3Block">
-              <label><span class="n" id="n3">3</span> <span id="l3">Как должно быть?</span></label>
+              <label><span class="n" id="n3">3</span> <span id="l3">Ожидаемое</span></label>
               <textarea id="q3"></textarea>
             </div>
 
@@ -433,44 +390,53 @@
               </div>
             </div>
 
-            <div class="btnRow">
-              <button class="btn primary" id="genForm" type="button" title="Сгенерировать отчёт" aria-label="Сгенерировать отчёт">Сгенерировать</button>
-              <button class="btn" id="newReport" type="button" title="Очистить форму" aria-label="Очистить форму">Новый отчёт</button>
+            <!-- bottom row: main buttons on the left, icon controls bottom-right -->
+            <div class="btnRow split">
+              <div class="btnGroup">
+                <button class="btn primary" id="genForm" type="button" title="Сгенерировать отчёт" aria-label="Сгенерировать отчёт">Сгенерировать</button>
+                <button class="btn" id="newReport" type="button" title="Очистить форму" aria-label="Очистить форму">Новый отчёт</button>
+              </div>
+
+              <div class="btnGroup right">
+                <button class="iconBtn" id="reportModeBtn" type="button"
+                  title="Режим репорта: увидел / действовал" aria-label="Режим репорта: увидел / действовал">👁️</button>
+
+                <button class="iconBtn" id="toggleInputModeBtn" type="button"
+                  title="Переключить режим ввода: форма / по шагам" aria-label="Переключить режим ввода: форма / по шагам">⇄</button>
+
+                <button class="iconBtn" id="demo" type="button"
+                  title="Демо: заполнить / очистить" aria-label="Демо: заполнить / очистить">?</button>
+              </div>
             </div>
           </div>
 
           <!-- WIZARD MODE -->
           <div id="wizardMode" class="hidden">
             <div class="wizardShell">
-              <div class="wizardTop">
-                <div class="progress" id="wizProgress">Шаг 1/7</div>
-                <div class="small">
-                  <span class="kbd">Enter</span> = далее • <span class="kbd">Shift+Enter</span> = новая строка
-                </div>
-              </div>
-
               <div class="q" id="wizBox">
                 <label id="wizLabel"><span class="n" id="wizN">1</span> —</label>
                 <div id="wizField"></div>
               </div>
 
-              <div class="btnRow">
-                <button class="btn ghost" id="wizBack" type="button" title="Назад" aria-label="Назад">Назад</button>
-                <button class="btn primary" id="wizNext" type="button" title="Далее" aria-label="Далее">Далее</button>
-                <button class="btn primary hidden" id="wizGen" type="button" title="Сгенерировать отчёт" aria-label="Сгенерировать отчёт">Сгенерировать</button>
-                <button class="btn" id="newReport2" type="button" title="Очистить" aria-label="Очистить">Новый отчёт</button>
-              </div>
+              <!-- bottom row: wizard nav on the left, icon controls bottom-right (same line) -->
+              <div class="btnRow split">
+                <div class="btnGroup">
+                  <button class="btn ghost" id="wizBack" type="button" title="Назад" aria-label="Назад">Назад</button>
+                  <button class="btn primary" id="wizNext" type="button" title="Далее" aria-label="Далее">Далее</button>
+                  <button class="btn primary hidden" id="wizGen" type="button" title="Сгенерировать отчёт" aria-label="Сгенерировать отчёт">Сгенерировать</button>
+                  <button class="btn" id="newReport2" type="button" title="Очистить" aria-label="Очистить">Новый отчёт</button>
+                </div>
 
-              <!-- keep icon controls available also here -->
-              <div class="topRow" style="justify-content:flex-end; margin-top:2px;">
-                <button class="iconBtn" id="reportModeBtn2" type="button"
-                  title="Режим репорта: увидел / действовал" aria-label="Режим репорта: увидел / действовал">👁️</button>
+                <div class="btnGroup right">
+                  <button class="iconBtn" id="reportModeBtn2" type="button"
+                    title="Режим репорта: увидел / действовал" aria-label="Режим репорта: увидел / действовал">👁️</button>
 
-                <button class="iconBtn" id="toggleInputModeBtn2" type="button"
-                  title="Переключить режим ввода: форма / по шагам" aria-label="Переключить режим ввода: форма / по шагам">⇄</button>
+                  <button class="iconBtn" id="toggleInputModeBtn2" type="button"
+                    title="Переключить режим ввода: форма / по шагам" aria-label="Переключить режим ввода: форма / по шагам">⇄</button>
 
-                <button class="iconBtn" id="demo2" type="button"
-                  title="Демо: заполнить / очистить" aria-label="Демо: заполнить / очистить">?</button>
+                  <button class="iconBtn" id="demo2" type="button"
+                    title="Демо: заполнить / очистить" aria-label="Демо: заполнить / очистить">?</button>
+                </div>
               </div>
             </div>
           </div>
@@ -591,7 +557,6 @@
 
   function focusFirstInput(){
     if(state.inputMode === "form"){
-      // In observe mode, q1 is hidden; focus first visible textarea
       if(state.reportMode === "observe") $("q2").focus();
       else $("q1").focus();
     }else{
@@ -647,8 +612,9 @@
     $("reportModeBtn").textContent = icon;
     $("reportModeBtn2").textContent = icon;
 
-    // tooltips (update text)
-    const title = isInteract ? "Режим репорта: действовал (есть шаги)" : "Режим репорта: увидел (без действий)";
+    const title = isInteract
+      ? "Режим репорта: действовал(а) — есть шаги"
+      : "Режим репорта: увидено — без действий";
     $("reportModeBtn").title = title;
     $("reportModeBtn2").title = title;
     $("reportModeBtn").setAttribute("aria-label", title);
@@ -674,13 +640,10 @@
   function applyQuestionLayout(){
     const observe = state.reportMode === "observe";
 
-    // hide/show q1 in form
     $("q1Block").classList.toggle("hidden", observe);
 
-    // labels + numbering in form
     const map = observe
       ? {
-          // q2 becomes #1, etc
           n2:"1", l2:"Что не так сейчас?",
           n3:"2", l3:"Как должно быть?",
           n4:"3", l4:"Где это произошло?",
@@ -689,16 +652,15 @@
           n7:"6", l7:"Тип бага"
         }
       : {
-          n1:"1", l1:"Что ты сделал?",
-          n2:"2", l2:"Что произошло?",
-          n3:"3", l3:"Как должно быть?",
+          n1:"1", l1:"Шаги / действия",
+          n2:"2", l2:"Наблюдаемое",
+          n3:"3", l3:"Ожидаемое",
           n4:"4", l4:"Где это произошло?",
           n5:"5", l5:"Насколько это критично?",
           n6:"6", l6:"Устройство / версия",
           n7:"7", l7:"Тип бага"
         };
 
-    // set only relevant nodes
     for(const [id,val] of Object.entries(map)){
       const el = $(id);
       if(el) el.textContent = val;
@@ -756,7 +718,6 @@
   }
 
   function validateInputs(data){
-    // In observe mode, q1 is not used; core remains q2+q3
     if(!data.q2 || !data.q3){
       toast("Заполни: что не так сейчас + как должно быть");
       return false;
@@ -769,12 +730,11 @@
     state.demoOn = !state.demoOn;
 
     if(state.demoOn){
-      // fill by current reportMode (so demo matches visible questions)
       if(state.reportMode === "observe"){
         $("q2").value = 'На главной странице текст кнопки "Sign in" перекрывается и съезжает.';
         $("q3").value = 'Текст должен быть выровнен и не перекрываться.';
       }else{
-        $("q1").value = 'Открыл страницу и нажал кнопку "Sign in".';
+        $("q1").value = 'Открыть экран и нажать кнопку "Sign in".';
         $("q2").value = "Ничего не произошло, приложение зависло.";
         $("q3").value = "Должно было появиться окно логина и пароля.";
       }
@@ -966,7 +926,6 @@
   // ========= wizard steps depend on reportMode =========
   function getWizardSteps(){
     if(state.reportMode === "observe"){
-      // 6 steps (no q1)
       return [
         { key:"q2", label:"Что не так сейчас?", type:"textarea" },
         { key:"q3", label:"Как должно быть?", type:"textarea" },
@@ -978,11 +937,10 @@
           options:[ ["functional","Функциональный"], ["ui","UI/Дизайн"], ["typo","Орфография/Текст"], ["crash","Краш/Зависание"] ] }
       ];
     }
-    // interact: 7 steps
     return [
-      { key:"q1", label:"Что ты сделал?", type:"textarea" },
-      { key:"q2", label:"Что произошло?", type:"textarea" },
-      { key:"q3", label:"Как должно быть?", type:"textarea" },
+      { key:"q1", label:"Шаги / действия", type:"textarea" },
+      { key:"q2", label:"Наблюдаемое", type:"textarea" },
+      { key:"q3", label:"Ожидаемое", type:"textarea" },
       { key:"q4", label:"Где это произошло?", type:"input" },
       { key:"q5", label:"Насколько это критично?", type:"select",
         options:[ ["Low","Низко"], ["Medium","Средне"], ["High","Высоко"], ["Critical","Критично"] ] },
@@ -998,7 +956,6 @@
     state.wizardStep = idx;
     const step = steps[idx];
 
-    $("wizProgress").textContent = `Шаг ${idx+1}/${steps.length}`;
     $("wizLabel").innerHTML = `<span class="n" id="wizN">${idx+1}</span> ${step.label}`;
 
     const host = $("wizField");
@@ -1068,6 +1025,14 @@
   $("wizGen").addEventListener("click", generateAI);
 
   // ========= init =========
+  function toggleReportMode(){
+    state.reportMode = (state.reportMode === "observe") ? "interact" : "observe";
+    renderReportModeUI();
+    focusFirstInput();
+  }
+  $("reportModeBtn").addEventListener("click", toggleReportMode);
+  $("reportModeBtn2").addEventListener("click", toggleReportMode);
+
   applyQuestionLayout();
   renderReportModeUI();
   setTab("input");
