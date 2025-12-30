@@ -23,6 +23,7 @@
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
+
     body{
       margin:0;
       font-family: ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
@@ -31,7 +32,13 @@
       -webkit-font-smoothing:antialiased;
       -webkit-text-size-adjust:100%;
       overflow-x:hidden;
+
+      /* FIX: скрываем "текстовый курсор" по клику в пустых местах страницы */
+      caret-color: transparent;
     }
+
+    /* Но в реальных полях ввода курсор нужен */
+    textarea, input, select{ caret-color: var(--text); }
 
     body::before{
       content:"";
@@ -45,19 +52,25 @@
         linear-gradient(180deg, var(--bg0), var(--bg1));
     }
 
+    /* Центрируем приложение по вертикали/горизонтали */
     .wrap{
       max-width: 680px;
       margin: 0 auto;
-      padding: 18px 14px 48px;
+      padding: 24px 14px;
+      min-height: 100svh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
     .card{
+      width: 100%;
       background: linear-gradient(180deg, rgba(11,23,48,.92), rgba(10,20,43,.90));
       border: 1px solid var(--line);
       border-radius: var(--r);
       box-shadow: var(--shadow2);
       overflow:hidden;
-      margin-top: 14px;
+      margin-top: 0; /* раньше был отступ сверху */
     }
 
     /* Шапка нужна только вне "Ввода" (когда показываем кнопку Назад) */
@@ -68,7 +81,7 @@
       justify-content:flex-start;
     }
 
-    /* Важное: одинаковый верх/низ отступы, без "лишней полосы" сверху */
+    /* Симметричный отступ сверху/снизу внутри рамки */
     .cardBody{ padding: 14px; }
 
     .hidden{ display:none !important; }
@@ -200,19 +213,17 @@
       color: rgba(234,242,255,.86);
     }
 
-    /* Переключатель режима: без текста, только тумблер */
+    /* FIX: Переключатель режима без внешней "капсулы" */
     .modeToggle{
-      border:1px solid rgba(234,242,255,.12);
-      background: rgba(234,242,255,.06);
-      color: rgba(234,242,255,.86);
-      padding: 9px 10px;
-      border-radius: 999px;
+      border: none;
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
       cursor:pointer;
       display:flex;
       align-items:center;
       user-select:none;
-      transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
-      white-space: nowrap;
+      transition: transform .08s ease, filter .12s ease;
     }
     .modeToggle:hover{ filter: brightness(1.06); }
     .modeToggle:active{ transform: translateY(1px); }
@@ -373,7 +384,6 @@
   <div class="wrap">
     <section class="card" id="mainCard">
 
-      <!-- Шапка появляется только когда нужна кнопка "Назад" -->
       <div class="cardHead hidden" id="cardHead">
         <button class="btn back" id="backBtn" type="button">← Назад</button>
       </div>
@@ -434,7 +444,7 @@
               </div>
             </div>
 
-            <!-- Нижний ряд: демо ближе, переключатель дальше (после демо) -->
+            <!-- Нижний ряд: демо ближе, переключатель дальше -->
             <div class="btnRow split">
               <div class="btnGroup">
                 <button class="btn primary" id="genForm" type="button">Сгенерировать</button>
@@ -598,7 +608,6 @@
       el.classList.toggle("hidden", k !== name);
     });
 
-    // Ввод: шапку вообще убираем => исчезает лишняя "полоса" и отступ сверху
     $("cardHead").classList.toggle("hidden", name === "input");
 
     if(name === "input") focusFirstInput();
@@ -1118,11 +1127,18 @@
   function wizardNext(){ if(state.wizardStep < WIZ_STEPS.length - 1){ state.wizardStep += 1; renderWizard(); wizardFocus(); } }
   function wizardBack(){ if(state.wizardStep > 0){ state.wizardStep -= 1; renderWizard(); wizardFocus(); } }
 
+  function toggleMode(){
+    setInputMode(state.inputMode === "form" ? "wizard" : "form");
+  }
+
   // ---------- init ----------
   on("genForm","click", generate);
 
   on("demo","click", demo);
   on("demo2","click", demo);
+
+  on("modeToggle","click", toggleMode);
+  on("modeToggle2","click", toggleMode);
 
   on("showEN","click", ()=>setResultView("en"));
   on("showRU","click", ()=>setResultView("ru"));
