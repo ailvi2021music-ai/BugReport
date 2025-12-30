@@ -10,17 +10,12 @@
     :root{
       --bg0:#050914;
       --bg1:#071221;
-      --card:#0B1730;
-      --card2:#0A142B;
       --line:rgba(140,195,255,.14);
       --text:#EAF2FF;
-      --muted:rgba(234,242,255,.72);
       --muted2:rgba(234,242,255,.55);
       --accent:#59C3FF;
-      --accent2:#4BE3D1;
       --good:#3CE07A;
       --warn:#FFD166;
-      --bad:#FF5C7A;
       --shadow: 0 18px 60px rgba(0,0,0,.55);
       --shadow2: 0 10px 30px rgba(0,0,0,.35);
       --r:18px;
@@ -66,61 +61,45 @@
       overflow:hidden;
       margin-top: 14px;
     }
+
     .cardHead{
       padding: 14px 16px 12px;
       border-bottom:1px solid rgba(140,195,255,.10);
       display:flex;
       gap:10px;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
-      flex-wrap:nowrap; /* чтобы не переносилось под табы */
+      flex-wrap:nowrap;
     }
     .cardBody{ padding: 12px 14px 14px; }
 
-    .tabsRow{
+    .hidden{ display:none !important; }
+
+    .seg{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
       align-items:center;
-      min-width: 0;
+      justify-content:flex-end;
     }
-    .tab{
-      border:1px solid rgba(89,195,255,.22);
-      color: rgba(234,242,255,.86);
-      background: rgba(89,195,255,.08);
-      padding: 10px 12px;
+    .segBtn{
+      border:1px solid rgba(234,242,255,.12);
+      background: rgba(234,242,255,.06);
+      color: rgba(234,242,255,.80);
+      padding: 8px 10px;
       border-radius: 999px;
       cursor:pointer;
       font-size: 13px;
-      letter-spacing:.2px;
       user-select:none;
       transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
-      display:flex;
-      align-items:center;
-      gap:8px;
       white-space: nowrap;
     }
-    .tab:hover{ filter: brightness(1.06); }
-    .tab:active{ transform: translateY(1px); }
-    .tab.active{
-      background: linear-gradient(180deg, rgba(89,195,255,.26), rgba(89,195,255,.12));
-      border-color: rgba(89,195,255,.40);
-      box-shadow: 0 14px 40px rgba(89,195,255,.10);
-    }
-    .tab[disabled]{
-      opacity:.45;
-      cursor:not-allowed;
-      filter:none;
-      transform:none;
-    }
-    .pill{
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(234,242,255,.12);
-      background: rgba(234,242,255,.06);
-      color: rgba(234,242,255,.78);
-      white-space: nowrap;
+    .segBtn:hover{ filter: brightness(1.06); }
+    .segBtn:active{ transform: translateY(1px); }
+    .segBtn.active{
+      border-color: rgba(89,195,255,.35);
+      background: rgba(89,195,255,.12);
+      color: rgba(234,242,255,.92);
     }
 
     .q{
@@ -199,9 +178,7 @@
       align-items:center;
       justify-content:flex-start;
     }
-    .btnRow.split{
-      justify-content:space-between; /* слева основные, справа демо */
-    }
+    .btnRow.split{ justify-content:space-between; }
     .btnGroup{
       display:flex;
       gap:10px;
@@ -244,32 +221,13 @@
       filter:none;
       transform:none;
     }
-
-    .seg{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:flex-end;
-    }
-    .segBtn{
-      border:1px solid rgba(234,242,255,.12);
-      background: rgba(234,242,255,.06);
-      color: rgba(234,242,255,.80);
-      padding: 8px 10px;
+    .btn.back{
+      padding: 10px 12px;
       border-radius: 999px;
-      cursor:pointer;
       font-size: 13px;
-      user-select:none;
-      transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
-      white-space: nowrap;
-    }
-    .segBtn:hover{ filter: brightness(1.06); }
-    .segBtn:active{ transform: translateY(1px); }
-    .segBtn.active{
-      border-color: rgba(89,195,255,.35);
-      background: rgba(89,195,255,.12);
-      color: rgba(234,242,255,.92);
+      background: rgba(234,242,255,.06);
+      border-color: rgba(234,242,255,.12);
+      color: rgba(234,242,255,.86);
     }
 
     .outBlock{
@@ -345,8 +303,6 @@
       transform: translateX(-50%) translateY(-2px);
     }
 
-    .hidden{ display:none !important; }
-
     .wizardShell{
       display:flex;
       flex-direction:column;
@@ -385,19 +341,8 @@
 
     <section class="card" id="mainCard">
       <div class="cardHead">
-        <div class="tabsRow" role="tablist" aria-label="Навигация">
-          <button class="tab active" id="tabInput" type="button" data-tab="input">
-            Ввод <span class="pill" id="modePill">Форма</span>
-          </button>
-          <button class="tab" id="tabResult" type="button" data-tab="result">
-            Результат <span class="pill" id="resPill">—</span>
-          </button>
-          <button class="tab" id="tabVocab" type="button" data-tab="vocab" disabled>
-            Словарь <span class="pill" id="vocPill">0</span>
-          </button>
-        </div>
+        <button class="btn back hidden" id="backBtn" type="button">← Назад</button>
 
-        <!-- Убрали "Режим ввода:" и держим сегмент справа -->
         <div class="seg" id="modeSeg" aria-label="Режим ввода">
           <button class="segBtn active" id="modeForm" type="button">Форма</button>
           <button class="segBtn" id="modeWizard" type="button">По шагам</button>
@@ -460,7 +405,6 @@
               </div>
             </div>
 
-            <!-- Кнопки: "Новый отчёт" рядом с "Сгенерировать", "Демо" справа -->
             <div class="btnRow split">
               <div class="btnGroup">
                 <button class="btn primary" id="genForm" type="button">Сгенерировать</button>
@@ -492,7 +436,6 @@
                 <button class="btn ghost" id="wizBack" type="button">Назад</button>
                 <button class="btn primary" id="wizNext" type="button">Далее</button>
                 <button class="btn primary hidden" id="wizGen" type="button">Сгенерировать</button>
-
                 <button class="btn" id="newReport2" type="button">Новый отчёт</button>
               </div>
 
@@ -513,7 +456,7 @@
           <div class="outBlock" id="blockEN">
             <div class="outTitle">
               <span style="display:flex; align-items:center; gap:10px;"><span class="dot"></span> Bug Report (EN)</span>
-              <span class="pill" id="sevPill">—</span>
+              <span class="small" id="sevPill">—</span>
             </div>
             <pre id="outEN">—</pre>
           </div>
@@ -521,7 +464,7 @@
           <div class="outBlock hidden" id="blockRU">
             <div class="outTitle">
               <span style="display:flex; align-items:center; gap:10px;"><span class="dot good"></span> Перевод (RU)</span>
-              <span class="pill" id="envPill">—</span>
+              <span class="small" id="envPill">—</span>
             </div>
             <pre id="outRU">—</pre>
           </div>
@@ -542,7 +485,7 @@
           <div class="outBlock">
             <div class="outTitle">
               <span style="display:flex; align-items:center; gap:10px;"><span class="dot warn"></span> Vocabulary (new)</span>
-              <span class="pill" id="vocCountPill">0</span>
+              <span class="small" id="vocCountPill">0</span>
             </div>
             <pre id="outV">—</pre>
 
@@ -550,10 +493,6 @@
               <button class="btn primary" id="copy" type="button">Copy</button>
               <button class="btn" id="newReport4" type="button">Новый отчёт</button>
               <button class="btn danger" id="resetVocab3" type="button">Сбросить словарь</button>
-            </div>
-
-            <div class="small">
-              Если новых слов нет — вкладка “Словарь” будет отключена.
             </div>
           </div>
         </div>
@@ -595,8 +534,8 @@
   }
 
   const state = {
-    tab: "input",
-    inputMode: "form",
+    tab: "input",           // input | result | vocab
+    inputMode: "form",      // form | wizard
     wizardStep: 0,
     lastVocabLines: "",
     lastVocabCount: 0,
@@ -609,26 +548,20 @@
     vocab: $("panelVocab")
   };
 
-  const tabEls = {
-    input: $("tabInput"),
-    result: $("tabResult"),
-    vocab: $("tabVocab")
-  };
-
   function setTab(name){
     state.tab = name;
+
     Object.entries(panels).forEach(([k, el])=>{
       el.classList.toggle("hidden", k !== name);
     });
-    Object.entries(tabEls).forEach(([k, el])=>{
-      el.classList.toggle("active", k === name);
-    });
 
+    // mode selector only in input
     $("modeSeg").classList.toggle("hidden", name !== "input");
 
-    if(name === "input"){
-      focusFirstInput();
-    }
+    // back arrow only outside input
+    $("backBtn").classList.toggle("hidden", name === "input");
+
+    if(name === "input") focusFirstInput();
   }
 
   function focusFirstInput(){
@@ -639,25 +572,26 @@
     }
   }
 
-  function setVocabEnabled(enabled){
-    $("tabVocab").disabled = !enabled;
-  }
-
   function setInputMode(mode){
     state.inputMode = mode;
     $("modeForm").classList.toggle("active", mode === "form");
     $("modeWizard").classList.toggle("active", mode === "wizard");
     $("formMode").classList.toggle("hidden", mode !== "form");
     $("wizardMode").classList.toggle("hidden", mode !== "wizard");
-    $("modePill").textContent = (mode === "form") ? "Форма" : "По шагам";
-    if(mode === "wizard"){
-      renderWizard();
-    }
+    if(mode === "wizard") renderWizard();
     focusFirstInput();
   }
 
   on("modeForm","click", ()=>setInputMode("form"));
   on("modeWizard","click", ()=>setInputMode("wizard"));
+
+  // Back button behavior:
+  // - from result -> input
+  // - from vocab  -> result
+  on("backBtn","click", ()=>{
+    if(state.tab === "vocab") setTab("result");
+    else setTab("input");
+  });
 
   function ruLocationToEn(locRu){
     const s = (locRu || "").trim().toLowerCase();
@@ -908,6 +842,7 @@
     $("sevPill").textContent = `Severity: ${data.severity}`;
     $("envPill").textContent = data.env ? `Env: ${data.env}` : "Env: —";
 
+    // vocab (dedupe)
     const known = loadKnown();
     const vocabItems = collectVocab(en);
 
@@ -925,11 +860,9 @@
     state.lastVocabLines = lines;
     state.lastVocabCount = newItems.length;
 
-    $("vocPill").textContent = String(state.lastVocabCount);
     $("vocCountPill").textContent = String(state.lastVocabCount);
 
     const hasNew = state.lastVocabCount > 0;
-    setVocabEnabled(hasNew);
     $("goVocab").disabled = !hasNew;
 
     if(hasNew){
@@ -937,16 +870,12 @@
         `Есть <b>${state.lastVocabCount}</b> новых слов/чанков. Нажми “Перейти в словарь”.`;
       $("outV").textContent = state.lastVocabLines;
       $("copy").disabled = false;
-      $("tabVocab").disabled = false;
     }else{
       $("afterText").textContent =
         `Новых слов нет — всё уже было. Можно сразу нажать “Новый отчёт”.`;
       $("outV").textContent = "—";
       $("copy").disabled = true;
-      $("tabVocab").disabled = true;
     }
-
-    $("resPill").textContent = "Готово";
 
     setTab("result");
     setResultView("en");
@@ -970,17 +899,14 @@
     $("q4").value = "";
     $("env").value = "";
 
-    $("resPill").textContent = "—";
-
     state.lastVocabLines = "";
     state.lastVocabCount = 0;
     state.demoOn = false;
 
-    $("vocPill").textContent = "0";
     $("vocCountPill").textContent = "0";
-    setVocabEnabled(false);
     $("outV").textContent = "—";
     $("copy").disabled = true;
+    $("goVocab").disabled = true;
 
     setTab("input");
     if(state.inputMode === "wizard"){
@@ -1045,6 +971,7 @@
     }
   }
 
+  // ---------- wizard ----------
   const WIZ_STEPS = [
     { key:"q1", label:"Что ты сделал?", help:"", type:"textarea", placeholder:"" },
     { key:"q2", label:"Что произошло?", help:"", type:"textarea", placeholder:"" },
@@ -1132,16 +1059,7 @@
   on("wizBack","click", wizardBack);
   on("wizGen","click", generate);
 
-  function bindTabClicks(){
-    Object.entries(tabEls).forEach(([name, el])=>{
-      el.addEventListener("click", ()=>{
-        if(el.disabled) return;
-        setTab(name);
-      });
-    });
-  }
-
-  bindTabClicks();
+  // ---------- init ----------
   on("genForm","click", generate);
   on("demo","click", demo);
 
@@ -1150,18 +1068,17 @@
   });
 
   on("resetVocab3","click", resetVocab);
+  on("copy","click", copyVocab);
 
   on("goVocab","click", ()=>{
-    if($("tabVocab").disabled) return;
+    if($("goVocab").disabled) return;
     setTab("vocab");
   });
 
-  on("copy","click", copyVocab);
-
   setTab("input");
   setInputMode("form");
-  setVocabEnabled(false);
-  $("resPill").textContent = "—";
+  $("goVocab").disabled = true;
+  $("copy").disabled = true;
 </script>
 </body>
 </html>
