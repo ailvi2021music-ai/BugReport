@@ -16,6 +16,7 @@
       --accent:#59C3FF;
       --good:#3CE07A;
       --warn:#FFD166;
+      --bad:#FF5C7A;
       --shadow: 0 18px 60px rgba(0,0,0,.55);
       --shadow2: 0 10px 30px rgba(0,0,0,.35);
       --r:18px;
@@ -32,7 +33,7 @@
       -webkit-font-smoothing:antialiased;
       -webkit-text-size-adjust:100%;
       overflow-x:hidden;
-      caret-color: transparent; /* скрывает курсор в пустых местах */
+      caret-color: transparent;
     }
     textarea, input, select{ caret-color: var(--text); }
 
@@ -48,7 +49,6 @@
         linear-gradient(180deg, var(--bg0), var(--bg1));
     }
 
-    /* Центрируем приложение по экрану */
     .wrap{
       max-width: 680px;
       margin: 0 auto;
@@ -76,7 +76,6 @@
     }
 
     .cardBody{ padding: 14px; }
-
     .hidden{ display:none !important; }
 
     .q{
@@ -142,9 +141,7 @@
       gap: 10px;
       margin-top: 10px;
     }
-    @media (max-width:520px){
-      .row{ grid-template-columns: 1fr; }
-    }
+    @media (max-width:520px){ .row{ grid-template-columns: 1fr; } }
 
     .btnRow{
       display:flex;
@@ -191,12 +188,8 @@
       border-color: rgba(255,92,122,.25);
       color: rgba(234,242,255,.88);
     }
-    .btn[disabled]{
-      opacity:.45;
-      cursor:not-allowed;
-      filter:none;
-      transform:none;
-    }
+    .btn[disabled]{ opacity:.45; cursor:not-allowed; filter:none; transform:none; }
+
     .btn.back{
       padding: 10px 12px;
       border-radius: 999px;
@@ -206,7 +199,6 @@
       color: rgba(234,242,255,.86);
     }
 
-    /* DEMO -> круглая кнопка с ? */
     .btnIcon{
       width: 36px;
       height: 36px;
@@ -216,10 +208,10 @@
       place-items:center;
       font-size: 16px;
       line-height: 1;
-      font-weight: 700;
+      font-weight: 800;
     }
 
-    /* Переключатель режима: без внешней капсулы */
+    /* Тумблер режима репорта (👁️ / 🖥️) — БЕЗ внешней капсулы */
     .modeToggle{
       border: none;
       background: transparent;
@@ -235,22 +227,34 @@
     .modeToggle:active{ transform: translateY(1px); }
 
     .switch{
-      width: 42px;
-      height: 22px;
+      width: 62px;
+      height: 26px;
       border-radius: 999px;
       border: 1px solid rgba(89,195,255,.22);
       background: rgba(89,195,255,.08);
       position: relative;
       flex: 0 0 auto;
+      overflow:hidden;
+    }
+    .switch .icons{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 0 8px;
+      font-size: 14px;
+      opacity:.85;
+      pointer-events:none;
     }
     .knob{
-      width: 18px;
-      height: 18px;
+      width: 22px;
+      height: 22px;
       border-radius: 999px;
       position: absolute;
       top: 1px;
       left: 1px;
-      background: rgba(234,242,255,.85);
+      background: rgba(234,242,255,.88);
       transition: left .14s ease;
       box-shadow: 0 8px 20px rgba(0,0,0,.35);
     }
@@ -258,7 +262,7 @@
       background: linear-gradient(180deg, rgba(89,195,255,.26), rgba(89,195,255,.12));
       border-color: rgba(89,195,255,.40);
     }
-    .modeToggle.on .knob{ left: 21px; }
+    .modeToggle.on .knob{ left: 39px; }
 
     .seg{
       display:flex;
@@ -295,7 +299,6 @@
       background: rgba(5,9,20,.35);
       margin-bottom: 10px;
     }
-
     .outTitle{
       display:flex;
       align-items:center;
@@ -315,6 +318,7 @@
     }
     .dot.good{ background: var(--good); box-shadow: 0 0 0 4px rgba(60,224,122,.10); }
     .dot.warn{ background: var(--warn); box-shadow: 0 0 0 4px rgba(255,209,102,.10); }
+    .dot.bad{ background: var(--bad); box-shadow: 0 0 0 4px rgba(255,92,122,.10); }
 
     pre{
       margin:0;
@@ -325,7 +329,6 @@
       line-height: 1.45;
       color: rgba(234,242,255,.92);
     }
-
     .small{
       color: var(--muted2);
       font-size: 12px;
@@ -357,6 +360,7 @@
       transform: translateX(-50%) translateY(-2px);
     }
 
+    /* Wizard */
     .wizardShell{ display:flex; flex-direction:column; gap:10px; }
     .wizardTop{
       display:flex;
@@ -402,17 +406,17 @@
           <!-- FORM MODE -->
           <div id="formMode">
             <div class="q">
-              <label id="label1"><span class="n">1</span> Что ты сделал?</label>
+              <label id="label1"><span class="n">1</span> Контекст / шаги</label>
               <textarea id="q1"></textarea>
             </div>
 
             <div class="q">
-              <label id="label2"><span class="n">2</span> Что произошло?</label>
+              <label id="label2"><span class="n">2</span> Что не так сейчас?</label>
               <textarea id="q2"></textarea>
             </div>
 
             <div class="q">
-              <label id="label3"><span class="n">3</span> Что должно было произойти?</label>
+              <label id="label3"><span class="n">3</span> Как должно быть?</label>
               <textarea id="q3"></textarea>
             </div>
 
@@ -456,17 +460,22 @@
                 <button class="btn" id="newReport" type="button">Новый отчёт</button>
               </div>
               <div class="btnGroup">
-                <button class="btn ghost btnIcon" id="demo" type="button" aria-label="Демо" title="Демо">?</button>
-                <button class="modeToggle" id="modeToggle" type="button"
-                        aria-label="Переключить режим (форма / по шагам)"
-                        aria-pressed="false" title="Переключить режим">
-                  <span class="switch" aria-hidden="true"><span class="knob"></span></span>
+                <!-- Поменяли местами: тумблер, потом ? ближе к краю -->
+                <button class="modeToggle" id="reportModeToggle" type="button"
+                        aria-label="Режим репорта (увидел / действовал)" aria-pressed="false" title="Режим репорта">
+                  <span class="switch" aria-hidden="true">
+                    <span class="icons">👁️<span style="opacity:.0;">.</span>🖥️</span>
+                    <span class="knob"></span>
+                  </span>
                 </button>
+                <button class="btn ghost btnIcon" id="demo" type="button" aria-label="Демо" title="Демо">?</button>
               </div>
             </div>
+
+            <div class="small" id="modeHint">Режим: 👁️ увидел (без действий)</div>
           </div>
 
-          <!-- WIZARD MODE -->
+          <!-- WIZARD MODE (оставили как есть, но он теперь просто "по шагам ввода", если захочешь вернуть позже) -->
           <div id="wizardMode" class="hidden">
             <div class="wizardShell">
               <div class="wizardTop">
@@ -491,20 +500,21 @@
                 </div>
 
                 <div class="btnGroup">
-                  <button class="btn ghost btnIcon" id="demo2" type="button" aria-label="Демо" title="Демо">?</button>
-                  <button class="modeToggle on" id="modeToggle2" type="button"
-                          aria-label="Переключить режим (форма / по шагам)"
-                          aria-pressed="true" title="Переключить режим">
-                    <span class="switch" aria-hidden="true"><span class="knob"></span></span>
+                  <button class="modeToggle on" id="reportModeToggle2" type="button"
+                          aria-label="Режим репорта (увидел / действовал)" aria-pressed="true" title="Режим репорта">
+                    <span class="switch" aria-hidden="true">
+                      <span class="icons">👁️<span style="opacity:.0;">.</span>🖥️</span>
+                      <span class="knob"></span>
+                    </span>
                   </button>
+                  <button class="btn ghost btnIcon" id="demo2" type="button" aria-label="Демо" title="Демо">?</button>
                 </div>
               </div>
 
-              <div class="small">
-                Можно переключаться между режимами — ответы не потеряются.
-              </div>
+              <div class="small" id="modeHint2">Режим: 👁️ увидел (без действий)</div>
             </div>
           </div>
+
         </div>
 
         <!-- RESULT PANEL -->
@@ -532,12 +542,11 @@
 
           <div class="outBlock" id="blockAfter">
             <div class="outTitle">
-              <span style="display:flex; align-items:center; gap:10px;"><span class="dot warn"></span> Что дальше</span>
+              <span style="display:flex; align-items:center; gap:10px;"><span class="dot warn"></span> Словарь</span>
             </div>
             <div class="small" id="afterText">—</div>
 
             <div class="btnRow">
-              <!-- FIX: всегда активна -->
               <button class="btn primary" id="goVocab" type="button">Перейти в словарь</button>
               <button class="btn" id="newReport3" type="button">Новый отчёт</button>
             </div>
@@ -582,6 +591,15 @@
   <div class="toast" id="toast">OK</div>
 
 <script>
+  // ========= CONFIG =========
+  // 1) Сюда вставь URL своего Cloudflare Worker endpoint (после деплоя)
+  const AI_ENDPOINT = "https://YOUR-WORKER.SUBDOMAIN.workers.dev"; // <-- поменяй
+
+  // 2) Если включишь APP_TOKEN в Worker, задай тут тот же токен
+  //    (можно оставить пустым, если в Worker APP_TOKEN не задан)
+  const APP_TOKEN = ""; // например: "my-super-long-token"
+
+  // ========= utils =========
   const $ = (id) => document.getElementById(id);
   function on(id, evt, fn){ const el = $(id); if(el) el.addEventListener(evt, fn); }
 
@@ -589,32 +607,22 @@
     const t = $("toast");
     t.textContent = msg;
     t.classList.add("show");
-    setTimeout(()=>t.classList.remove("show"), 1200);
+    setTimeout(()=>t.classList.remove("show"), 1400);
   }
 
   function cleanSpaces(s){ return (s||"").replace(/\s+/g," ").trim(); }
 
-  function extractQuotedUI(text){
-    const t = text || "";
-    const matches = [];
-    const re = /["“«](.+?)["”»]/g;
-    let m;
-    while ((m = re.exec(t)) !== null){
-      const v = cleanSpaces(m[1]);
-      if (v && v.length <= 50) matches.push(v);
-    }
-    return [...new Set(matches)];
-  }
-
+  // ========= state =========
   const state = {
     tab: "input",           // input | result | vocab
-    inputMode: "form",      // form | wizard
+    inputMode: "form",      // form | wizard (wizard оставлен, но не обязателен)
     wizardStep: 0,
-    lastVocabLines: "",
-    lastVocabCount: 0,
-    demoOn: false
+    reportMode: "observe",  // observe | interact
+    demoOn: false,
+    lastNewVocab: [],
   };
 
+  // ========= panels =========
   const panels = {
     input: $("panelInput"),
     result: $("panelResult"),
@@ -623,17 +631,11 @@
 
   function setTab(name){
     state.tab = name;
-
     Object.entries(panels).forEach(([k, el])=>{
       el.classList.toggle("hidden", k !== name);
     });
-
     $("cardHead").classList.toggle("hidden", name === "input");
-
-    if(name === "vocab"){
-      renderVocabPanel();
-    }
-
+    if(name === "vocab") renderVocabPanel();
     if(name === "input") focusFirstInput();
   }
 
@@ -642,338 +644,65 @@
     else wizardFocus();
   }
 
-  function getDynamicLabels(type){
-    if(type === "typo"){
-      return { q1:"Контекст (где увидел текст?)", q2:"Как написано сейчас?", q3:"Как должно быть?" };
-    }
-    if(type === "ui"){
-      return { q1:"Контекст (что было открыто?)", q2:"Что видно на экране?", q3:"Как должно выглядеть?" };
-    }
-    return { q1:"Что ты сделал?", q2:"Что произошло?", q3:"Что должно было произойти?" };
-  }
-
-  function applyDynamicLabels(){
-    const t = $("type").value;
-    const L = getDynamicLabels(t);
-    $("label1").innerHTML = `<span class="n">1</span> ${L.q1}`;
-    $("label2").innerHTML = `<span class="n">2</span> ${L.q2}`;
-    $("label3").innerHTML = `<span class="n">3</span> ${L.q3}`;
-    if(state.inputMode === "wizard") renderWizard();
-  }
-
-  function setInputMode(mode){
-    state.inputMode = mode;
-
-    $("formMode").classList.toggle("hidden", mode !== "form");
-    $("wizardMode").classList.toggle("hidden", mode !== "wizard");
-
-    const isWizard = (mode === "wizard");
-    $("modeToggle").classList.toggle("on", isWizard);
-    $("modeToggle").setAttribute("aria-pressed", String(isWizard));
-
-    $("modeToggle2").classList.toggle("on", isWizard);
-    $("modeToggle2").setAttribute("aria-pressed", String(isWizard));
-
-    if(isWizard) renderWizard();
-    focusFirstInput();
-  }
-
-  function toggleMode(){
-    setInputMode(state.inputMode === "form" ? "wizard" : "form");
-  }
-
-  on("modeToggle","click", toggleMode);
-  on("modeToggle2","click", toggleMode);
-
-  on("backBtn","click", ()=>{
-    if(state.tab === "vocab") setTab("result");
-    else setTab("input");
-  });
-
-  // ---------- FIX: убираем фокус/курсор при клике в "пустое место" внутри блока ----------
+  // ========= click empty area -> blur =========
   function blurIfClickedOnEmptyArea(e){
     const q = e.target.closest(".q");
     if(!q) return;
-
     const interactive = e.target.closest("textarea, input, select, button");
     if(interactive) return;
-
-    // Если фокус был в поле внутри этого блока — убираем, чтобы курсор не оставался
     const ae = document.activeElement;
-    if(ae && q.contains(ae) && /^(TEXTAREA|INPUT|SELECT)$/.test(ae.tagName)){
-      ae.blur();
-    }
-
+    if(ae && q.contains(ae) && /^(TEXTAREA|INPUT|SELECT)$/.test(ae.tagName)) ae.blur();
     e.preventDefault();
     e.stopPropagation();
   }
   document.addEventListener("mousedown", blurIfClickedOnEmptyArea, true);
   document.addEventListener("click", blurIfClickedOnEmptyArea, true);
 
-  // ---------- location RU -> EN ----------
-  function ruLocationToEn(locRu){
-    const s = (locRu || "").trim().toLowerCase();
-    const dict = new Map([
-      ["на главном экране", "the main screen"],
-      ["главный экран", "the main screen"],
-      ["на главной странице", "the main page"],
-      ["главная страница", "the main page"],
-      ["на странице профиля", "the profile page"],
-      ["страница профиля", "the profile page"],
-      ["профиль", "the profile page"],
-      ["на странице настроек", "the settings page"],
-      ["на экране настроек", "the settings screen"],
-      ["настройки", "the settings screen"],
-      ["экран входа", "the login screen"],
-      ["логин", "the login screen"]
-    ]);
-    if (dict.has(s)) return dict.get(s);
+  // ========= back =========
+  on("backBtn","click", ()=>{
+    if(state.tab === "vocab") setTab("result");
+    else setTab("input");
+  });
 
-    const hasCyr = /[а-яё]/i.test(locRu || "");
-    if (!hasCyr && locRu) return locRu;
+  // ========= report mode toggle (👁️ / 🖥️) =========
+  function renderReportModeUI(){
+    const onInteract = (state.reportMode === "interact");
+    $("reportModeToggle").classList.toggle("on", onInteract);
+    $("reportModeToggle").setAttribute("aria-pressed", String(onInteract));
+    $("modeHint").textContent = onInteract ? "Режим: 🖥️ действовал (воспроизвёл)" : "Режим: 👁️ увидел (без действий)";
 
-    return "the specified screen";
+    $("reportModeToggle2").classList.toggle("on", onInteract);
+    $("reportModeToggle2").setAttribute("aria-pressed", String(onInteract));
+    $("modeHint2").textContent = onInteract ? "Режим: 🖥️ действовал (воспроизвёл)" : "Режим: 👁️ увидел (без действий)";
   }
 
-  // ---------- vocab engine ----------
-  const LS_KEY_KNOWN = "bugTrainer_knownVocab_v4";     // чтобы не повторять "новые"
-  const LS_KEY_ALL   = "bugTrainer_allVocab_v1";       // накопительный словарь
+  function toggleReportMode(){
+    state.reportMode = (state.reportMode === "observe") ? "interact" : "observe";
+    renderReportModeUI();
+  }
 
-  function loadKnown(){
-    try{
-      const raw = localStorage.getItem(LS_KEY_KNOWN);
-      const arr = raw ? JSON.parse(raw) : [];
-      return new Set(arr);
-    }catch{
-      return new Set();
-    }
-  }
-  function saveKnown(set){
-    localStorage.setItem(LS_KEY_KNOWN, JSON.stringify([...set]));
-  }
+  on("reportModeToggle","click", toggleReportMode);
+  on("reportModeToggle2","click", toggleReportMode);
+  renderReportModeUI();
+
+  // ========= local vocab storage =========
+  const LS_ALL = "bugTrainer_allVocab_ai_v1";
 
   function loadAllVocab(){
     try{
-      const raw = localStorage.getItem(LS_KEY_ALL);
+      const raw = localStorage.getItem(LS_ALL);
       const arr = raw ? JSON.parse(raw) : [];
       return Array.isArray(arr) ? arr : [];
-    }catch{
-      return [];
-    }
+    }catch{ return []; }
   }
-
   function saveAllVocab(arr){
-    localStorage.setItem(LS_KEY_ALL, JSON.stringify(arr));
+    localStorage.setItem(LS_ALL, JSON.stringify(arr));
   }
-
-  const STOP = new Set([
-    "the","a","an","to","of","and","or","in","on","at","with","for","from","into","by","as",
-    "is","are","was","were","be","been","being","it","this","that","these","those","there",
-    "i","you","we","they","he","she","my","your","our","their","his","her",
-    "do","does","did","not","no","yes","but","if","then","than","when","while","because",
-    "should","could","would","can","may","might","will"
-  ]);
-
-  const FIXED_TERMS = new Map([
-    ["Steps to reproduce", "Шаги воспроизведения"],
-    ["Actual result", "Фактический результат"],
-    ["Expected result", "Ожидаемый результат"],
-    ["Environment", "Окружение"],
-    ["Title", "Заголовок"],
-
-    ["does not respond", "не реагирует"],
-    ["nothing happens", "ничего не происходит"],
-    ["should appear", "должно появиться"],
-    ["should be", "должно быть"],
-    ["unable to", "не удаётся"],
-    ["fails to", "не выполняет / не удаётся"],
-
-    ["the app freezes", "приложение зависает"],
-    ["the app crashes", "приложение падает (краш)"],
-    ["error message", "сообщение об ошибке"],
-    ["ui elements overlap", "элементы интерфейса перекрываются"]
-  ]);
-
-  const WORDS = new Map([
-    ["button","кнопка"],
-    ["screen","экран"],
-    ["page","страница"],
-    ["profile","профиль"],
-    ["settings","настройки"],
-    ["login","вход"],
-    ["save","сохранить"],
-    ["submit","отправить"],
-    ["error","ошибка"],
-    ["message","сообщение"],
-    ["freeze","зависает"],
-    ["crash","краш / падение"],
-    ["unresponsive","не реагирует"],
-    ["overlap","перекрывает"],
-    ["typo","опечатка"],
-    ["misspell","написать с ошибкой"],
-    ["appear","появиться"],
-    ["unexpected","неожиданно"],
-    ["expected","ожидаемый"],
-    ["actual","фактический"],
-    ["reproduce","воспроизвести"],
-    ["steps","шаги"],
-    ["result","результат"],
-    ["environment","окружение"]
-  ]);
-
-  function normalizeToken(w){
-    w = (w||"").toLowerCase().replace(/[^a-z0-9\-]+/g,"").trim();
-    if(!w) return "";
-    if (w.endsWith("ing") && w.length > 5) w = w.slice(0,-3);
-    else if (w.endsWith("ed") && w.length > 4) w = w.slice(0,-2);
-    else if (w.endsWith("es") && w.length > 4) w = w.slice(0,-2);
-    else if (w.endsWith("s") && w.length > 3) w = w.slice(0,-1);
-
-    if (w === "freezes") w = "freeze";
-    if (w === "crashes") w = "crash";
-    if (w === "overlaps") w = "overlap";
-    if (w === "misspelled") w = "misspell";
-    return w;
-  }
-
-  function collectVocab(enReport){
-    const found = [];
-    const lower = enReport.toLowerCase();
-
-    for (const [k, ru] of FIXED_TERMS.entries()){
-      if (lower.includes(k.toLowerCase())) found.push({en:k, ru});
-    }
-
-    const rawTokens = enReport.split(/\s+/g).map(t=>t.replace(/[.,:;()"]/g,""));
-    for(const t of rawTokens){
-      const n = normalizeToken(t);
-      if(!n || STOP.has(n)) continue;
-      if (n.length < 3) continue;
-      const ru = WORDS.get(n);
-      if(!ru) continue;
-      found.push({en:n, ru});
-    }
-
-    const uniq = new Map();
-    for(const item of found){
-      const key = item.en.toLowerCase();
-      if(!uniq.has(key)) uniq.set(key, item);
-    }
-    return [...uniq.values()];
-  }
-
-  // ---------- report generation ----------
-  function guessTitle(type, uiTexts, q2ru){
-    const primary = uiTexts[0] ? `"${uiTexts[0]}"` : "UI";
-    if(type === "crash") return `${primary} causes the app to freeze`;
-    if(type === "ui") return `${primary} UI issue on screen`;
-    if(type === "typo") return `Typo on screen`;
-    const t = (q2ru||"").toLowerCase();
-    if (t.includes("не реаг") || t.includes("ничего") || t.includes("не происходит")) return `${primary} does not respond`;
-    return `${primary} behaves incorrectly`;
-  }
-
-  function buildEN({q1,q2,q3,q4,severity,env,type}){
-    const uiFromAll = [...new Set([
-      ...extractQuotedUI(q1),
-      ...extractQuotedUI(q2),
-      ...extractQuotedUI(q3),
-      ...extractQuotedUI(q4),
-    ])];
-
-    const title = guessTitle(type, uiFromAll, q2);
-
-    const steps = [];
-    const locEn = q4 ? ruLocationToEn(q4) : "";
-    steps.push(locEn ? `Open ${locEn}.` : `Open the application.`);
-
-    const hasAction = !!cleanSpaces(q1);
-    if(hasAction){
-      steps.push(q1.endsWith(".") ? q1 : (q1 + "."));
-    }else{
-      steps.push((type === "typo" || type === "ui") ? "Observe the issue." : "Perform the described action.");
-    }
-
-    let actual = "Unexpected behavior occurs.";
-    let expected = "The expected behavior should occur.";
-
-    const q2l = (q2||"").toLowerCase();
-    if (q2l.includes("не реаг") ) actual = `The button does not respond.`;
-    if (q2l.includes("ничего") || q2l.includes("не происходит")) actual = "Nothing happens.";
-    if (q2l.includes("завис")) actual = "The app freezes.";
-    if (q2l.includes("краш") || q2l.includes("вылет") || q2l.includes("падает")) actual = "The app crashes.";
-    if (q2l.includes("ошибк")) actual = "An error message appears.";
-    if (q2l.includes("перекры") || q2l.includes("наезж")) actual = "UI elements overlap.";
-
-    const q3l = (q3||"").toLowerCase();
-    if (q3l.includes("появ") || q3l.includes("откры")) expected = "The expected screen/window should appear.";
-    if (q3l.includes("сохран")) expected = "The data should be saved successfully.";
-    if (q3l.includes("войти") || q3l.includes("логин") || q3l.includes("парол")) expected = "The login screen should appear.";
-    if (q3l.includes("не перекры") || q3l.includes("не наезж")) expected = "UI elements should not overlap.";
-
-    const lines = [];
-    lines.push(`Title: ${title}`);
-    lines.push("");
-    lines.push("Steps to reproduce:");
-    steps.forEach((s,i)=>lines.push(`${i+1}. ${s}`));
-    lines.push("");
-    lines.push("Actual result:");
-    lines.push(cleanSpaces(q2) || actual);
-    lines.push("");
-    lines.push("Expected result:");
-    lines.push(cleanSpaces(q3) || expected);
-    lines.push("");
-    lines.push(`Severity: ${severity}`);
-    if(env) lines.push(`Environment: ${env}`);
-
-    return lines.join("\n");
-  }
-
-  function buildRU({q1,q2,q3,q4,severity,env,type}){
-    const lines = [];
-    lines.push(`Заголовок: ${cleanSpaces(q2) ? cleanSpaces(q2) : "Некорректное поведение"}`);
-    lines.push("");
-    lines.push("Шаги воспроизведения:");
-    lines.push(`1. ${q4 ? "Открыть " + q4 : "Открыть приложение"}`);
-    if(cleanSpaces(q1)) lines.push(`2. ${cleanSpaces(q1)}`);
-    else lines.push(`2. ${(type === "typo" || type === "ui") ? "Увидеть проблему на экране" : "Выполнить действие"}`);
-    lines.push("");
-    lines.push("Фактический результат:");
-    lines.push(cleanSpaces(q2) || "Происходит некорректное поведение.");
-    lines.push("");
-    lines.push("Ожидаемый результат:");
-    lines.push(cleanSpaces(q3) || "Ожидаемое поведение.");
-    lines.push("");
-    lines.push(`Критичность: ${severity}`);
-    if (env) lines.push(`Окружение: ${env}`);
-    return lines.join("\n");
-  }
-
-  function gatherInputs(){
-    return {
-      q1: cleanSpaces($("q1").value),
-      q2: cleanSpaces($("q2").value),
-      q3: cleanSpaces($("q3").value),
-      q4: cleanSpaces($("q4").value),
-      severity: $("q5").value,
-      env: cleanSpaces($("env").value),
-      type: $("type").value
-    };
-  }
-
-  function validateInputs(data){
-    if(!data.q2 || !data.q3){
-      toast("Заполни: Что произошло + Что должно было произойти");
-      return false;
-    }
-    return true;
-  }
-
-  function ensureAllVocabUnique(allArr){
+  function dedupeLines(lines){
     const seen = new Set();
     const out = [];
-    for(const line of allArr){
-      const key = String(line || "").toLowerCase().trim();
+    for(const line of lines){
+      const key = String(line||"").trim().toLowerCase();
       if(!key) continue;
       if(seen.has(key)) continue;
       seen.add(key);
@@ -982,53 +711,7 @@
     return out;
   }
 
-  function generate(){
-    const data = gatherInputs();
-    if(!validateInputs(data)) return;
-
-    const en = buildEN(data);
-    const ru = buildRU(data);
-
-    $("outEN").textContent = en;
-    $("outRU").textContent = ru;
-
-    $("sevPill").textContent = `Severity: ${data.severity}`;
-    $("envPill").textContent = data.env ? `Env: ${data.env}` : "Env: —";
-
-    // vocab: новые + накопительные
-    const known = loadKnown();
-    const vocabItems = collectVocab(en);
-
-    const newItems = [];
-    for(const it of vocabItems){
-      const key = it.en.toLowerCase();
-      if(!known.has(key)){
-        newItems.push(it);
-        known.add(key);
-      }
-    }
-    saveKnown(known);
-
-    const newLines = newItems.map(x => `${x.en} — ${x.ru}`);
-    state.lastVocabLines = newLines.join("\n");
-    state.lastVocabCount = newLines.length;
-
-    // накопительный список (все слова за всё время)
-    const all = loadAllVocab();
-    const merged = ensureAllVocabUnique(all.concat(newLines));
-    saveAllVocab(merged);
-
-    // pills + after
-    $("afterText").textContent = (state.lastVocabCount > 0)
-      ? `Добавлено новых: ${state.lastVocabCount}.`
-      : `Новых слов в этом отчёте нет.`;
-
-    // всегда можно идти в словарь
-    setTab("result");
-    setResultView("en");
-    toast("Готово");
-  }
-
+  // ========= result view =========
   function setResultView(which){
     const en = (which === "en");
     $("showEN").classList.toggle("active", en);
@@ -1036,65 +719,45 @@
     $("blockEN").classList.toggle("hidden", !en);
     $("blockRU").classList.toggle("hidden", en);
   }
+  on("showEN","click", ()=>setResultView("en"));
+  on("showRU","click", ()=>setResultView("ru"));
 
-  function renderVocabPanel(){
-    const newText = (state.lastVocabLines || "").trim();
-    const allArr = loadAllVocab();
-    const allText = allArr.join("\n").trim();
-
-    $("vocNewCountPill").textContent = String(state.lastVocabCount || 0);
-    $("outVNew").textContent = newText ? newText : "—";
-    $("copyNew").disabled = !newText;
-
-    $("vocAllCountPill").textContent = String(allArr.length);
-    $("outVAll").textContent = allText ? allText : "—";
-    $("copyAll").disabled = !allText;
+  // ========= collect inputs =========
+  function gatherInputs(){
+    return {
+      mode: state.reportMode,
+      type: $("type").value,
+      severity: $("q5").value,
+      location_ru: cleanSpaces($("q4").value),
+      env_text: cleanSpaces($("env").value),
+      q1: cleanSpaces($("q1").value),
+      q2: cleanSpaces($("q2").value),
+      q3: cleanSpaces($("q3").value),
+    };
   }
 
-  function newReport(){
-    $("q1").value = "";
-    $("q2").value = "";
-    $("q3").value = "";
-    $("q4").value = "";
-    $("env").value = "";
-
-    state.lastVocabLines = "";
-    state.lastVocabCount = 0;
-    state.demoOn = false;
-
-    setTab("input");
-    if(state.inputMode === "wizard"){
-      state.wizardStep = 0;
-      renderWizard();
+  function validateInputs(data){
+    if(!data.q2 || !data.q3){
+      toast("Заполни: что не так сейчас + как должно быть");
+      return false;
     }
-    applyDynamicLabels();
-    focusFirstInput();
-    toast("Новый отчёт");
+    return true;
   }
 
-  function resetVocab(){
-    localStorage.removeItem(LS_KEY_KNOWN);
-    localStorage.removeItem(LS_KEY_ALL);
-
-    state.lastVocabLines = "";
-    state.lastVocabCount = 0;
-
-    if(state.tab === "vocab") renderVocabPanel();
-    toast("Словарь сброшен");
-  }
-
+  // ========= demo toggle =========
   function demo(){
     state.demoOn = !state.demoOn;
 
     if(state.demoOn){
-      $("q1").value = 'Открыл приложение и нажал кнопку "Sign in".';
+      $("q1").value = 'Открыл страницу и нажал кнопку "Sign in".';
       $("q2").value = "Ничего не произошло, приложение зависло.";
       $("q3").value = "Должно было появиться окно логина и пароля.";
       $("q4").value = "на главном экране";
       $("q5").value = "High";
       $("env").value = "iPhone 13, iOS 18.2, App v1.2.0";
       $("type").value = "crash";
-      applyDynamicLabels();
+      state.reportMode = "interact";
+      renderReportModeUI();
       toast("Демо заполнено");
     }else{
       $("q1").value = "";
@@ -1104,14 +767,133 @@
       $("env").value = "";
       $("q5").value = "Medium";
       $("type").value = "functional";
-      applyDynamicLabels();
+      state.reportMode = "observe";
+      renderReportModeUI();
       toast("Демо очищено");
     }
+  }
+  on("demo","click", demo);
+  on("demo2","click", demo);
 
-    if(state.inputMode === "wizard"){
-      renderWizard();
-      wizardFocus();
+  // ========= AI call =========
+  function setLoading(isLoading){
+    $("genForm").disabled = isLoading;
+    $("newReport").disabled = isLoading;
+    if($("wizGen")) $("wizGen").disabled = isLoading;
+  }
+
+  async function generateAI(){
+    const data = gatherInputs();
+    if(!validateInputs(data)) return;
+
+    if(!AI_ENDPOINT || AI_ENDPOINT.includes("YOUR-WORKER")){
+      toast("Сначала вставь AI_ENDPOINT (URL Worker)");
+      return;
     }
+
+    setLoading(true);
+    $("outEN").textContent = "Генерирую…";
+    $("outRU").textContent = "Генерирую…";
+    $("sevPill").textContent = `Severity: ${data.severity}`;
+    $("envPill").textContent = data.env_text ? `Env: ${data.env_text}` : "Env: —";
+
+    try{
+      const resp = await fetch(AI_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(APP_TOKEN ? {"Authorization": `Bearer ${APP_TOKEN}`} : {})
+        },
+        body: JSON.stringify(data)
+      });
+
+      const json = await resp.json().catch(()=> ({}));
+      if(!resp.ok){
+        const msg = json && (json.error || json.detail) ? (json.error + (json.detail ? (": " + json.detail) : "")) : "Ошибка AI";
+        $("outEN").textContent = "—";
+        $("outRU").textContent = "—";
+        toast(msg.slice(0,120));
+        setTab("result");
+        setResultView("en");
+        return;
+      }
+
+      // ожидаем: { en_report, ru_report, new_vocab:[{en,ru}] }
+      const en = (json.en_report || "—").trim();
+      const ru = (json.ru_report || "—").trim();
+      const newVocab = Array.isArray(json.new_vocab) ? json.new_vocab : [];
+
+      $("outEN").textContent = en || "—";
+      $("outRU").textContent = ru || "—";
+
+      // vocab: новое + накопительное
+      state.lastNewVocab = newVocab
+        .filter(x=>x && x.en && x.ru)
+        .slice(0,15);
+
+      const newLines = state.lastNewVocab.map(x => `${x.en} — ${x.ru}`);
+      const all = loadAllVocab();
+      const merged = dedupeLines(all.concat(newLines));
+      saveAllVocab(merged);
+
+      $("afterText").textContent = state.lastNewVocab.length
+        ? `Новых для словаря: ${state.lastNewVocab.length}.`
+        : `Новых для словаря нет.`;
+
+      setTab("result");
+      setResultView("en");
+      toast("Готово");
+    }catch(err){
+      $("outEN").textContent = "—";
+      $("outRU").textContent = "—";
+      toast("Ошибка сети / Worker");
+      setTab("result");
+      setResultView("en");
+    }finally{
+      setLoading(false);
+    }
+  }
+
+  on("genForm","click", generateAI);
+
+  // ========= vocab panel =========
+  function renderVocabPanel(){
+    const newLines = (state.lastNewVocab || []).map(x => `${x.en} — ${x.ru}`);
+    const allArr = loadAllVocab();
+
+    $("vocNewCountPill").textContent = String(newLines.length);
+    $("outVNew").textContent = newLines.length ? newLines.join("\n") : "—";
+    $("copyNew").disabled = !newLines.length;
+
+    $("vocAllCountPill").textContent = String(allArr.length);
+    $("outVAll").textContent = allArr.length ? allArr.join("\n") : "—";
+    $("copyAll").disabled = !allArr.length;
+  }
+
+  // ========= new report / reset =========
+  function newReport(){
+    $("q1").value = "";
+    $("q2").value = "";
+    $("q3").value = "";
+    $("q4").value = "";
+    $("env").value = "";
+    $("q5").value = "Medium";
+    $("type").value = "functional";
+
+    state.demoOn = false;
+    state.lastNewVocab = [];
+    state.reportMode = "observe";
+    renderReportModeUI();
+
+    setTab("input");
+    toast("Новый отчёт");
+  }
+
+  function resetVocab(){
+    localStorage.removeItem(LS_ALL);
+    state.lastNewVocab = [];
+    if(state.tab === "vocab") renderVocabPanel();
+    toast("Словарь сброшен");
   }
 
   async function copyText(text){
@@ -1131,116 +913,24 @@
     }
   }
 
-  // ---------- wizard ----------
-  const WIZ_STEPS = [
-    { key:"q1", label:"", help:"", type:"textarea", placeholder:"" },
-    { key:"q2", label:"", help:"", type:"textarea", placeholder:"" },
-    { key:"q3", label:"", help:"", type:"textarea", placeholder:"" },
-    { key:"q4", label:"Где это произошло?", help:"", type:"input", placeholder:"" },
-    { key:"q5", label:"Насколько это критично?", help:"", type:"select",
-      options:[ ["Low","Низко"], ["Medium","Средне"], ["High","Высоко"], ["Critical","Критично"] ] },
-    { key:"env", label:"Устройство / версия", help:"", type:"input", placeholder:"" },
-    { key:"type", label:"Тип бага", help:"", type:"select",
-      options:[ ["functional","Функциональный"], ["ui","UI/Дизайн"], ["typo","Орфография/Текст"], ["crash","Краш/Зависание"] ] }
-  ];
-
-  function renderWizard(){
-    const idx = state.wizardStep;
-    const step = WIZ_STEPS[idx];
-
-    const t = $("type").value;
-    const L = getDynamicLabels(t);
-    if(idx === 0) step.label = L.q1;
-    if(idx === 1) step.label = L.q2;
-    if(idx === 2) step.label = L.q3;
-
-    $("wizProgress").textContent = `Шаг ${idx+1}/${WIZ_STEPS.length}`;
-    $("wizLabel").innerHTML = `<span class="n" id="wizN">${idx+1}</span> ${step.label}`;
-    $("wizHelp").textContent = step.help || "";
-
-    const host = $("wizField");
-    host.innerHTML = "";
-
-    let el;
-    if(step.type === "textarea"){
-      el = document.createElement("textarea");
-      el.placeholder = step.placeholder || "";
-      el.value = $(step.key).value;
-      el.addEventListener("input", ()=>{ $(step.key).value = el.value; });
-    }else if(step.type === "input"){
-      el = document.createElement("input");
-      el.placeholder = step.placeholder || "";
-      el.value = $(step.key).value;
-      el.addEventListener("input", ()=>{ $(step.key).value = el.value; });
-    }else if(step.type === "select"){
-      el = document.createElement("select");
-      step.options.forEach(([val, txt])=>{
-        const opt = document.createElement("option");
-        opt.value = val;
-        opt.textContent = txt;
-        el.appendChild(opt);
-      });
-      el.value = $(step.key).value;
-      el.addEventListener("change", ()=>{
-        $(step.key).value = el.value;
-        if(step.key === "type"){
-          applyDynamicLabels();
-          renderWizard();
-        }
-      });
-    }
-
-    el.id = "wizActiveField";
-    host.appendChild(el);
-
-    $("wizBack").disabled = (idx === 0);
-    const last = (idx === WIZ_STEPS.length - 1);
-    $("wizNext").classList.toggle("hidden", last);
-    $("wizGen").classList.toggle("hidden", !last);
-
-    el.addEventListener("keydown", (e)=>{
-      if(e.key !== "Enter") return;
-      if(step.type === "textarea" && e.shiftKey) return;
-      e.preventDefault();
-      if(last) generate();
-      else wizardNext();
-    });
-  }
-
-  function wizardFocus(){ const el = $("wizActiveField"); if(el) el.focus(); }
-  function wizardNext(){ if(state.wizardStep < WIZ_STEPS.length - 1){ state.wizardStep += 1; renderWizard(); wizardFocus(); } }
-  function wizardBack(){ if(state.wizardStep > 0){ state.wizardStep -= 1; renderWizard(); wizardFocus(); } }
-
-  // ---------- init ----------
-  on("genForm","click", generate);
-
-  on("demo","click", demo);
-  on("demo2","click", demo);
-
-  on("showEN","click", ()=>setResultView("en"));
-  on("showRU","click", ()=>setResultView("ru"));
+  on("goVocab","click", ()=>setTab("vocab"));
 
   ["newReport","newReport2","newReport3","newReport4"].forEach(id=> on(id,"click", newReport));
-
   on("resetVocab3","click", resetVocab);
 
-  on("copyNew","click", ()=>copyText(state.lastVocabLines || ""));
+  on("copyNew","click", ()=>{
+    const newLines = (state.lastNewVocab || []).map(x => `${x.en} — ${x.ru}`).join("\n");
+    copyText(newLines);
+  });
   on("copyAll","click", ()=>{
     const allText = loadAllVocab().join("\n");
     copyText(allText);
   });
 
-  on("goVocab","click", ()=>setTab("vocab"));
-
-  on("wizNext","click", wizardNext);
-  on("wizBack","click", wizardBack);
-  on("wizGen","click", generate);
-
-  on("type","change", applyDynamicLabels);
-
+  // init
   setTab("input");
-  setInputMode("form");
-  applyDynamicLabels();
+  $("sevPill").textContent = "—";
+  $("envPill").textContent = "Env: —";
 </script>
 </body>
 </html>
