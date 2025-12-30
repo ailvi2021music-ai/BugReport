@@ -10,12 +10,17 @@
     :root{
       --bg0:#050914;
       --bg1:#071221;
+      --card:#0B1730;
+      --card2:#0A142B;
       --line:rgba(140,195,255,.14);
       --text:#EAF2FF;
+      --muted:rgba(234,242,255,.72);
       --muted2:rgba(234,242,255,.55);
       --accent:#59C3FF;
+      --accent2:#4BE3D1;
       --good:#3CE07A;
       --warn:#FFD166;
+      --bad:#FF5C7A;
       --shadow: 0 18px 60px rgba(0,0,0,.55);
       --shadow2: 0 10px 30px rgba(0,0,0,.35);
       --r:18px;
@@ -33,6 +38,7 @@
       overflow-x:hidden;
     }
 
+    /* Stable background layer (fixes artifacts on desktop) */
     body::before{
       content:"";
       position: fixed;
@@ -48,7 +54,7 @@
     }
 
     .wrap{
-      max-width: 980px;
+      max-width: 760px; /* было 980px — сделал уже */
       margin: 0 auto;
       padding: 18px 14px 48px;
     }
@@ -66,12 +72,23 @@
       border-bottom:1px solid rgba(140,195,255,.10);
       display:flex;
       gap:10px;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       flex-wrap:wrap;
     }
+    .cardTitle{ font-size: 14px; margin:0; letter-spacing:.2px; }
+    .badge{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(89,195,255,.22);
+      color:rgba(234,242,255,.85);
+      background: rgba(89,195,255,.08);
+      white-space:nowrap;
+    }
     .cardBody{ padding: 14px 16px 16px; }
 
+    /* Tabs moved into the main card */
     .tabsRow{
       display:flex;
       gap:8px;
@@ -116,34 +133,19 @@
       white-space: nowrap;
     }
 
-    .seg{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:flex-end;
-    }
-    .segLabel{
+    .hint{
+      margin: 0 0 12px;
       color: var(--muted2);
-      font-size: 12px;
-      margin-right: 2px;
-    }
-    .segBtn{
-      border:1px solid rgba(234,242,255,.12);
-      background: rgba(234,242,255,.06);
-      color: rgba(234,242,255,.80);
-      padding: 8px 10px;
-      border-radius: 999px;
-      cursor:pointer;
       font-size: 13px;
-      user-select:none;
-      transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
+      line-height: 1.35;
     }
-    .segBtn:hover{ filter: brightness(1.06); }
-    .segBtn:active{ transform: translateY(1px); }
-    .segBtn.active{
-      border-color: rgba(89,195,255,.35);
-      background: rgba(89,195,255,.12);
+    .hint code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      padding:2px 6px;
+      border-radius:8px;
+      background: rgba(89,195,255,.10);
+      border:1px solid rgba(89,195,255,.15);
       color: rgba(234,242,255,.92);
     }
 
@@ -161,6 +163,10 @@
       color: rgba(234,242,255,.90);
       font-size: 13px;
       margin-bottom: 8px;
+
+      /* чтобы не появлялся “курсор редактирования”/выделение при клике по тексту и цифрам */
+      user-select: none;
+      cursor: default;
     }
     .n{
       width: 22px; height: 22px;
@@ -171,6 +177,9 @@
       color: rgba(234,242,255,.92);
       font-size: 12px;
       flex: 0 0 auto;
+
+      user-select:none;
+      cursor: default;
     }
 
     textarea, input, select{
@@ -250,6 +259,39 @@
       cursor:not-allowed;
       filter:none;
       transform:none;
+    }
+
+    .seg{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .segLabel{
+      color: var(--muted2);
+      font-size: 12px;
+      margin-right: 2px;
+      user-select:none;
+      cursor: default;
+    }
+    .segBtn{
+      border:1px solid rgba(234,242,255,.12);
+      background: rgba(234,242,255,.06);
+      color: rgba(234,242,255,.80);
+      padding: 8px 10px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-size: 13px;
+      user-select:none;
+      transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
+    }
+    .segBtn:hover{ filter: brightness(1.06); }
+    .segBtn:active{ transform: translateY(1px); }
+    .segBtn.active{
+      border-color: rgba(89,195,255,.35);
+      background: rgba(89,195,255,.12);
+      color: rgba(234,242,255,.92);
     }
 
     .outBlock{
@@ -335,7 +377,7 @@
     .wizardTop{
       display:flex;
       justify-content:space-between;
-      align-items:center;
+      alignitems:center;
       gap:10px;
       flex-wrap:wrap;
       margin-bottom: 4px;
@@ -343,12 +385,28 @@
     .progress{
       color: rgba(234,242,255,.78);
       font-size: 12px;
+      user-select:none;
+      cursor: default;
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(234,242,255,.14);
+      background: rgba(234,242,255,.06);
+      color: rgba(234,242,255,.86);
+      user-select:none;
+      cursor: default;
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
+
+    <!-- SINGLE MAIN CARD (tabs inside) -->
     <section class="card" id="mainCard">
       <div class="cardHead">
         <div class="tabsRow" role="tablist" aria-label="Навигация">
@@ -379,23 +437,23 @@
           <div id="formMode">
             <div class="q">
               <label><span class="n">1</span> Что ты сделал?</label>
-              <textarea id="q1" placeholder='Например: Открыл приложение и нажал "Sign in".'></textarea>
+              <textarea id="q1"></textarea>
             </div>
 
             <div class="q">
               <label><span class="n">2</span> Что произошло?</label>
-              <textarea id="q2" placeholder="Например: Ничего не произошло / зависло / ошибка / текст перекрыт."></textarea>
+              <textarea id="q2"></textarea>
             </div>
 
             <div class="q">
               <label><span class="n">3</span> Что должно было произойти?</label>
-              <textarea id="q3" placeholder="Например: Должно было открыться окно логина и пароля."></textarea>
+              <textarea id="q3"></textarea>
             </div>
 
             <div class="row">
               <div class="q" style="margin:0;">
                 <label><span class="n">4</span> Где это произошло? (по-русски)</label>
-                <input id="q4" placeholder="Например: на главном экране / в настройках / на странице профиля." />
+                <input id="q4" />
               </div>
 
               <div class="q" style="margin:0;">
@@ -412,7 +470,7 @@
             <div class="row">
               <div class="q" style="margin:0;">
                 <label><span class="n">6</span> Окружение (по желанию)</label>
-                <input id="env" placeholder='Например: iPhone 13, iOS 18.2, App v1.4.0 / Chrome 127, Windows 11.' />
+                <input id="env" />
               </div>
 
               <div class="q" style="margin:0;">
@@ -432,18 +490,16 @@
               <button class="btn" id="newReport" type="button">Новый отчёт</button>
               <button class="btn danger" id="resetVocab" type="button">Сбросить словарь</button>
             </div>
-
-            <div class="small">
-              “Словарь без повторов” хранится в этом браузере (localStorage).
-            </div>
           </div>
 
           <!-- WIZARD MODE -->
           <div id="wizardMode" class="hidden">
             <div class="wizardShell">
-              <!-- УДАЛЕНО: подсказки/хинты сверху (как на скриншоте) -->
               <div class="wizardTop">
                 <div class="progress" id="wizProgress">Шаг 1/7</div>
+                <div class="small">
+                  <span class="kbd">Enter</span> = далее • <span class="kbd">Shift+Enter</span> = новая строка
+                </div>
               </div>
 
               <div class="q" id="wizBox">
@@ -526,11 +582,13 @@
 
       </div>
     </section>
+
   </div>
 
   <div class="toast" id="toast">OK</div>
 
 <script>
+  // ---------- utils ----------
   const $ = (id) => document.getElementById(id);
 
   function toast(msg){
@@ -554,20 +612,23 @@
     return [...new Set(matches)];
   }
 
+  // ---------- app state ----------
   const state = {
-    tab: "input",
-    inputMode: "form",
+    tab: "input",           // input | result | vocab
+    inputMode: "form",      // form | wizard
     wizardStep: 0,
     lastVocabLines: "",
     lastVocabCount: 0
   };
 
+  // ---------- panels ----------
   const panels = {
     input: $("panelInput"),
     result: $("panelResult"),
     vocab: $("panelVocab")
   };
 
+  // ---------- tabs ----------
   const tabEls = {
     input: $("tabInput"),
     result: $("tabResult"),
@@ -583,19 +644,27 @@
       el.classList.toggle("active", k === name);
     });
 
+    // show/hide mode selector only in input
     $("modeSeg").classList.toggle("hidden", name !== "input");
-    if(name === "input") focusFirstInput();
+
+    if(name === "input"){
+      focusFirstInput();
+    }
   }
 
   function focusFirstInput(){
-    if(state.inputMode === "form") $("q1").focus();
-    else wizardFocus();
+    if(state.inputMode === "form"){
+      $("q1").focus();
+    }else{
+      wizardFocus();
+    }
   }
 
   function setVocabEnabled(enabled){
     $("tabVocab").disabled = !enabled;
   }
 
+  // ---------- input mode switch ----------
   function setInputMode(mode){
     state.inputMode = mode;
     $("modeForm").classList.toggle("active", mode === "form");
@@ -603,13 +672,16 @@
     $("formMode").classList.toggle("hidden", mode !== "form");
     $("wizardMode").classList.toggle("hidden", mode !== "wizard");
     $("modePill").textContent = (mode === "form") ? "Форма" : "По шагам";
-    if(mode === "wizard") renderWizard();
+    if(mode === "wizard"){
+      renderWizard();
+    }
     focusFirstInput();
   }
 
   $("modeForm").addEventListener("click", ()=>setInputMode("form"));
   $("modeWizard").addEventListener("click", ()=>setInputMode("wizard"));
 
+  // ---------- location RU -> EN ----------
   function ruLocationToEn(locRu){
     const s = (locRu || "").trim().toLowerCase();
     const dict = new Map([
@@ -627,12 +699,15 @@
       ["логин", "the login screen"]
     ]);
     if (dict.has(s)) return dict.get(s);
+
     const hasCyr = /[а-яё]/i.test(locRu || "");
     if (!hasCyr && locRu) return locRu;
+
     return "the specified screen";
   }
 
-  const LS_KEY = "bugTrainer_knownVocab_v6";
+  // ---------- vocab engine ----------
+  const LS_KEY = "bugTrainer_knownVocab_v4";
 
   function loadKnown(){
     try{
@@ -710,6 +785,7 @@
     else if (w.endsWith("ed") && w.length > 4) w = w.slice(0,-2);
     else if (w.endsWith("es") && w.length > 4) w = w.slice(0,-2);
     else if (w.endsWith("s") && w.length > 3) w = w.slice(0,-1);
+
     if (w === "freezes") w = "freeze";
     if (w === "crashes") w = "crash";
     if (w === "overlaps") w = "overlap";
@@ -743,6 +819,7 @@
     return [...uniq.values()];
   }
 
+  // ---------- report generation ----------
   function guessTitle(type, uiTexts, q2ru){
     const primary = uiTexts[0] ? `"${uiTexts[0]}"` : "Button";
     if(type === "crash") return `${primary} causes the app to freeze`;
@@ -797,11 +874,10 @@
     lines.push("");
     lines.push("Expected result:");
     lines.push(expected);
-  
-::contentReference[oaicite:0]{index=0}
-  lines.push("");
+    lines.push("");
     lines.push(`Severity: ${severity}`);
     if(env) lines.push(`Environment: ${env}`);
+
     return lines.join("\n");
   }
 
@@ -844,14 +920,6 @@
     return true;
   }
 
-  function setResultView(which){
-    const en = (which === "en");
-    $("showEN").classList.toggle("active", en);
-    $("showRU").classList.toggle("active", !en);
-    $("blockEN").classList.toggle("hidden", !en);
-    $("blockRU").classList.toggle("hidden", en);
-  }
-
   function generate(){
     const data = gatherInputs();
     if(!validateInputs(data)) return;
@@ -861,11 +929,14 @@
 
     $("outEN").textContent = en;
     $("outRU").textContent = ru;
+
     $("sevPill").textContent = `Severity: ${data.severity}`;
     $("envPill").textContent = data.env ? `Env: ${data.env}` : "Env: —";
 
+    // vocab (dedupe)
     const known = loadKnown();
     const vocabItems = collectVocab(en);
+
     const newItems = [];
     for(const it of vocabItems){
       const key = it.en.toLowerCase();
@@ -880,6 +951,7 @@
     state.lastVocabLines = lines;
     state.lastVocabCount = newItems.length;
 
+    // pills
     $("vocPill").textContent = String(state.lastVocabCount);
     $("vocCountPill").textContent = String(state.lastVocabCount);
 
@@ -888,23 +960,38 @@
     $("goVocab").disabled = !hasNew;
 
     if(hasNew){
-      $("afterText").innerHTML = `Есть <b>${state.lastVocabCount}</b> новых слов/чанков. Нажми “Перейти в словарь”.`;
+      $("afterText").innerHTML =
+        `Есть <b>${state.lastVocabCount}</b> новых слов/чанков. Нажми “Перейти в словарь”.`;
       $("outV").textContent = state.lastVocabLines;
       $("copy").disabled = false;
       $("tabVocab").disabled = false;
     }else{
-      $("afterText").textContent = `Новых слов нет — всё уже было. Можно сразу нажать “Новый отчёт”.`;
+      $("afterText").textContent =
+        `Новых слов нет — всё уже было. Можно сразу нажать “Новый отчёт”.`;
       $("outV").textContent = "—";
       $("copy").disabled = true;
       $("tabVocab").disabled = true;
     }
 
     $("resPill").textContent = "Готово";
+
     setTab("result");
     setResultView("en");
     toast("Готово");
   }
 
+  // ---------- result view toggle ----------
+  function setResultView(which){
+    const en = (which === "en");
+    $("showEN").classList.toggle("active", en);
+    $("showRU").classList.toggle("active", !en);
+    $("blockEN").classList.toggle("hidden", !en);
+    $("blockRU").classList.toggle("hidden", en);
+  }
+  $("showEN").addEventListener("click", ()=>setResultView("en"));
+  $("showRU").addEventListener("click", ()=>setResultView("ru"));
+
+  // ---------- new report ----------
   function newReport(){
     $("q1").value = "";
     $("q2").value = "";
@@ -913,6 +1000,7 @@
     $("env").value = "";
 
     $("resPill").textContent = "—";
+
     state.lastVocabLines = "";
     state.lastVocabCount = 0;
 
@@ -967,17 +1055,16 @@
     }
   }
 
-  // Wizard steps (Enter/Shift+Enter behavior kept, but no top hint block)
+  // ---------- wizard ----------
   const WIZ_STEPS = [
-    { key:"q1", label:"Что ты сделал?", help:'UI-текст в кавычках: "Sign in", "Save".', type:"textarea", placeholder:'Например: Открыл приложение и нажал "Sign in".' },
-    { key:"q2", label:"Что произошло?", help:"Факт: ничего не произошло / зависло / ошибка.", type:"textarea", placeholder:"Например: Ничего не произошло, приложение зависло." },
-    { key:"q3", label:"Что должно было произойти?", help:"Ожидание: что должно появиться/измениться.", type:"textarea", placeholder:"Например: Должно было появиться окно логина и пароля." },
-    { key:"q4", label:"Где это произошло? (по-русски)", help:"Например: на главном экране / профиль / настройки.", type:"input", placeholder:"Например: на главном экране" },
-    { key:"q5", label:"Насколько это критично?", help:"Выбери уровень.", type:"select",
+    { key:"q1", label:"Что ты сделал?", help:'', type:"textarea", placeholder:'' },
+    { key:"q2", label:"Что произошло?", help:"", type:"textarea", placeholder:"" },
+    { key:"q3", label:"Что должно было произойти?", help:"", type:"textarea", placeholder:"" },
+    { key:"q4", label:"Где это произошло? (по-русски)", help:"", type:"input", placeholder:"" },
+    { key:"q5", label:"Насколько это критично?", help:"", type:"select",
       options:[ ["Low","Низко"], ["Medium","Средне"], ["High","Высоко"], ["Critical","Критично"] ] },
-    { key:"env", label:"Окружение (по желанию)", help:"Устройство/браузер/версия. Можно пропустить.", type:"input",
-      placeholder:"Например: iPhone 13, iOS 18.2, App v1.2.0" },
-    { key:"type", label:"Тип бага", help:"Выбери тип.", type:"select",
+    { key:"env", label:"Окружение (по желанию)", help:"", type:"input", placeholder:"" },
+    { key:"type", label:"Тип бага", help:"", type:"select",
       options:[ ["functional","Функциональный"], ["ui","UI/Дизайн"], ["typo","Орфография/Текст"], ["crash","Краш/Зависание"] ] }
   ];
 
@@ -1003,7 +1090,7 @@
       el.placeholder = step.placeholder || "";
       el.value = $(step.key).value;
       el.addEventListener("input", ()=>{ $(step.key).value = el.value; });
-    }else{
+    }else if(step.type === "select"){
       el = document.createElement("select");
       step.options.forEach(([val, txt])=>{
         const opt = document.createElement("option");
@@ -1036,6 +1123,7 @@
     const el = $("wizActiveField");
     if(el) el.focus();
   }
+
   function wizardNext(){
     if(state.wizardStep < WIZ_STEPS.length - 1){
       state.wizardStep += 1;
@@ -1051,7 +1139,11 @@
     }
   }
 
-  // Bindings
+  $("wizNext").addEventListener("click", wizardNext);
+  $("wizBack").addEventListener("click", wizardBack);
+  $("wizGen").addEventListener("click", generate);
+
+  // ---------- tab clicks ----------
   function bindTabClicks(){
     Object.entries(tabEls).forEach(([name, el])=>{
       el.addEventListener("click", ()=>{
@@ -1061,33 +1153,24 @@
     });
   }
 
-  function setInputMode(mode){
-    state.inputMode = mode;
-    $("modeForm").classList.toggle("active", mode === "form");
-    $("modeWizard").classList.toggle("active", mode === "wizard");
-    $("formMode").classList.toggle("hidden", mode !== "form");
-    $("wizardMode").classList.toggle("hidden", mode !== "wizard");
-    $("modePill").textContent = (mode === "form") ? "Форма" : "По шагам";
-    if(mode === "wizard") renderWizard();
-    focusFirstInput();
-  }
-
+  // ---------- init ----------
   bindTabClicks();
   $("genForm").addEventListener("click", generate);
   $("demo").addEventListener("click", demo);
-  $("showEN").addEventListener("click", ()=>setResultView("en"));
-  $("showRU").addEventListener("click", ()=>setResultView("ru"));
-  $("goVocab").addEventListener("click", ()=>{ if(!$("tabVocab").disabled) setTab("vocab"); });
+
+  ["newReport","newReport2","newReport3","newReport4"].forEach(id=>{
+    $(id).addEventListener("click", newReport);
+  });
+  ["resetVocab","resetVocab2","resetVocab3"].forEach(id=>{
+    $(id).addEventListener("click", resetVocab);
+  });
+
+  $("goVocab").addEventListener("click", ()=>{
+    if($("tabVocab").disabled) return;
+    setTab("vocab");
+  });
+
   $("copy").addEventListener("click", copyVocab);
-
-  ["newReport","newReport2","newReport3","newReport4"].forEach(id=>$(id).addEventListener("click", newReport));
-  ["resetVocab","resetVocab2","resetVocab3"].forEach(id=>$(id).addEventListener("click", resetVocab));
-
-  $("modeForm").addEventListener("click", ()=>setInputMode("form"));
-  $("modeWizard").addEventListener("click", ()=>setInputMode("wizard"));
-  $("wizNext").addEventListener("click", wizardNext);
-  $("wizBack").addEventListener("click", wizardBack);
-  $("wizGen").addEventListener("click", generate);
 
   setTab("input");
   setInputMode("form");
