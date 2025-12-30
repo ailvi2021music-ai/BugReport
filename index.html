@@ -54,7 +54,7 @@
     }
 
     .wrap{
-      max-width: 760px; /* было 980px — сделал уже */
+      max-width: 680px; /* было 760px — сузил ещё */
       margin: 0 auto;
       padding: 18px 14px 48px;
     }
@@ -76,17 +76,7 @@
       justify-content:space-between;
       flex-wrap:wrap;
     }
-    .cardTitle{ font-size: 14px; margin:0; letter-spacing:.2px; }
-    .badge{
-      font-size:12px;
-      padding:6px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(89,195,255,.22);
-      color:rgba(234,242,255,.85);
-      background: rgba(89,195,255,.08);
-      white-space:nowrap;
-    }
-    .cardBody{ padding: 14px 16px 16px; }
+    .cardBody{ padding: 12px 14px 14px; } /* чуть компактнее */
 
     /* Tabs moved into the main card */
     .tabsRow{
@@ -133,22 +123,6 @@
       white-space: nowrap;
     }
 
-    .hint{
-      margin: 0 0 12px;
-      color: var(--muted2);
-      font-size: 13px;
-      line-height: 1.35;
-    }
-    .hint code{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size:12px;
-      padding:2px 6px;
-      border-radius:8px;
-      background: rgba(89,195,255,.10);
-      border:1px solid rgba(89,195,255,.15);
-      color: rgba(234,242,255,.92);
-    }
-
     .q{
       padding: 12px;
       border: 1px solid rgba(140,195,255,.12);
@@ -163,9 +137,7 @@
       color: rgba(234,242,255,.90);
       font-size: 13px;
       margin-bottom: 8px;
-
-      /* чтобы не появлялся “курсор редактирования”/выделение при клике по тексту и цифрам */
-      user-select: none;
+      user-select:none;
       cursor: default;
     }
     .n{
@@ -177,7 +149,6 @@
       color: rgba(234,242,255,.92);
       font-size: 12px;
       flex: 0 0 auto;
-
       user-select:none;
       cursor: default;
     }
@@ -188,7 +159,7 @@
       border: 1px solid rgba(140,195,255,.16);
       color: var(--text);
       border-radius: 12px;
-      padding: 11px 12px;
+      padding: 10px 11px; /* чуть компактнее */
       outline: none;
       font-size: 14px;
       line-height: 1.35;
@@ -406,7 +377,6 @@
 <body>
   <div class="wrap">
 
-    <!-- SINGLE MAIN CARD (tabs inside) -->
     <section class="card" id="mainCard">
       <div class="cardHead">
         <div class="tabsRow" role="tablist" aria-label="Навигация">
@@ -452,7 +422,7 @@
 
             <div class="row">
               <div class="q" style="margin:0;">
-                <label><span class="n">4</span> Где это произошло? (по-русски)</label>
+                <label><span class="n">4</span> Где это произошло?</label>
                 <input id="q4" />
               </div>
 
@@ -469,7 +439,7 @@
 
             <div class="row">
               <div class="q" style="margin:0;">
-                <label><span class="n">6</span> Окружение (по желанию)</label>
+                <label><span class="n">6</span> Устройство / версия</label>
                 <input id="env" />
               </div>
 
@@ -488,7 +458,6 @@
               <button class="btn primary" id="genForm" type="button">Сгенерировать</button>
               <button class="btn ghost" id="demo" type="button">Демо</button>
               <button class="btn" id="newReport" type="button">Новый отчёт</button>
-              <button class="btn danger" id="resetVocab" type="button">Сбросить словарь</button>
             </div>
           </div>
 
@@ -514,7 +483,6 @@
                 <button class="btn primary hidden" id="wizGen" type="button">Сгенерировать</button>
 
                 <button class="btn" id="newReport2" type="button">Новый отчёт</button>
-                <button class="btn danger" id="resetVocab2" type="button">Сбросить словарь</button>
               </div>
 
               <div class="small">
@@ -591,6 +559,11 @@
   // ---------- utils ----------
   const $ = (id) => document.getElementById(id);
 
+  function on(id, evt, fn){
+    const el = $(id);
+    if(el) el.addEventListener(evt, fn);
+  }
+
   function toast(msg){
     const t = $("toast");
     t.textContent = msg;
@@ -618,7 +591,8 @@
     inputMode: "form",      // form | wizard
     wizardStep: 0,
     lastVocabLines: "",
-    lastVocabCount: 0
+    lastVocabCount: 0,
+    demoOn: false
   };
 
   // ---------- panels ----------
@@ -644,7 +618,6 @@
       el.classList.toggle("active", k === name);
     });
 
-    // show/hide mode selector only in input
     $("modeSeg").classList.toggle("hidden", name !== "input");
 
     if(name === "input"){
@@ -678,8 +651,8 @@
     focusFirstInput();
   }
 
-  $("modeForm").addEventListener("click", ()=>setInputMode("form"));
-  $("modeWizard").addEventListener("click", ()=>setInputMode("wizard"));
+  on("modeForm","click", ()=>setInputMode("form"));
+  on("modeWizard","click", ()=>setInputMode("wizard"));
 
   // ---------- location RU -> EN ----------
   function ruLocationToEn(locRu){
@@ -951,7 +924,6 @@
     state.lastVocabLines = lines;
     state.lastVocabCount = newItems.length;
 
-    // pills
     $("vocPill").textContent = String(state.lastVocabCount);
     $("vocCountPill").textContent = String(state.lastVocabCount);
 
@@ -988,8 +960,8 @@
     $("blockEN").classList.toggle("hidden", !en);
     $("blockRU").classList.toggle("hidden", en);
   }
-  $("showEN").addEventListener("click", ()=>setResultView("en"));
-  $("showRU").addEventListener("click", ()=>setResultView("ru"));
+  on("showEN","click", ()=>setResultView("en"));
+  on("showRU","click", ()=>setResultView("ru"));
 
   // ---------- new report ----------
   function newReport(){
@@ -1003,6 +975,8 @@
 
     state.lastVocabLines = "";
     state.lastVocabCount = 0;
+
+    state.demoOn = false;
 
     $("vocPill").textContent = "0";
     $("vocCountPill").textContent = "0";
@@ -1025,14 +999,33 @@
   }
 
   function demo(){
-    $("q1").value = 'Открыл приложение и нажал кнопку "Sign in".';
-    $("q2").value = "Ничего не произошло, приложение зависло.";
-    $("q3").value = "Должно было появиться окно логина и пароля.";
-    $("q4").value = "на главном экране";
-    $("q5").value = "High";
-    $("env").value = "iPhone 13, iOS 18.2, App v1.2.0";
-    $("type").value = "crash";
-    toast("Демо заполнено");
+    // toggle: 1-й клик — заполнить, 2-й — очистить, и так по кругу
+    state.demoOn = !state.demoOn;
+
+    if(state.demoOn){
+      $("q1").value = 'Открыл приложение и нажал кнопку "Sign in".';
+      $("q2").value = "Ничего не произошло, приложение зависло.";
+      $("q3").value = "Должно было появиться окно логина и пароля.";
+      $("q4").value = "на главном экране";
+      $("q5").value = "High";
+      $("env").value = "iPhone 13, iOS 18.2, App v1.2.0";
+      $("type").value = "crash";
+      toast("Демо заполнено");
+    }else{
+      $("q1").value = "";
+      $("q2").value = "";
+      $("q3").value = "";
+      $("q4").value = "";
+      $("env").value = "";
+      $("q5").value = "Medium";
+      $("type").value = "functional";
+      toast("Демо очищено");
+    }
+
+    if(state.inputMode === "wizard"){
+      renderWizard();
+      wizardFocus();
+    }
   }
 
   async function copyVocab(){
@@ -1057,13 +1050,13 @@
 
   // ---------- wizard ----------
   const WIZ_STEPS = [
-    { key:"q1", label:"Что ты сделал?", help:'', type:"textarea", placeholder:'' },
+    { key:"q1", label:"Что ты сделал?", help:"", type:"textarea", placeholder:"" },
     { key:"q2", label:"Что произошло?", help:"", type:"textarea", placeholder:"" },
     { key:"q3", label:"Что должно было произойти?", help:"", type:"textarea", placeholder:"" },
-    { key:"q4", label:"Где это произошло? (по-русски)", help:"", type:"input", placeholder:"" },
+    { key:"q4", label:"Где это произошло?", help:"", type:"input", placeholder:"" },
     { key:"q5", label:"Насколько это критично?", help:"", type:"select",
       options:[ ["Low","Низко"], ["Medium","Средне"], ["High","Высоко"], ["Critical","Критично"] ] },
-    { key:"env", label:"Окружение (по желанию)", help:"", type:"input", placeholder:"" },
+    { key:"env", label:"Устройство / версия", help:"", type:"input", placeholder:"" },
     { key:"type", label:"Тип бага", help:"", type:"select",
       options:[ ["functional","Функциональный"], ["ui","UI/Дизайн"], ["typo","Орфография/Текст"], ["crash","Краш/Зависание"] ] }
   ];
@@ -1139,9 +1132,9 @@
     }
   }
 
-  $("wizNext").addEventListener("click", wizardNext);
-  $("wizBack").addEventListener("click", wizardBack);
-  $("wizGen").addEventListener("click", generate);
+  on("wizNext","click", wizardNext);
+  on("wizBack","click", wizardBack);
+  on("wizGen","click", generate);
 
   // ---------- tab clicks ----------
   function bindTabClicks(){
@@ -1155,22 +1148,22 @@
 
   // ---------- init ----------
   bindTabClicks();
-  $("genForm").addEventListener("click", generate);
-  $("demo").addEventListener("click", demo);
+  on("genForm","click", generate);
+  on("demo","click", demo);
 
   ["newReport","newReport2","newReport3","newReport4"].forEach(id=>{
-    $(id).addEventListener("click", newReport);
-  });
-  ["resetVocab","resetVocab2","resetVocab3"].forEach(id=>{
-    $(id).addEventListener("click", resetVocab);
+    on(id,"click", newReport);
   });
 
-  $("goVocab").addEventListener("click", ()=>{
+  // кнопка сброса словаря — только в разделе “Словарь”
+  on("resetVocab3","click", resetVocab);
+
+  on("goVocab","click", ()=>{
     if($("tabVocab").disabled) return;
     setTab("vocab");
   });
 
-  $("copy").addEventListener("click", copyVocab);
+  on("copy","click", copyVocab);
 
   setTab("input");
   setInputMode("form");
