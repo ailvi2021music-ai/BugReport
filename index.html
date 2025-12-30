@@ -201,65 +201,24 @@
       color: rgba(234,242,255,.86);
     }
 
-    .btnIcon{
-      width: 36px;
-      height: 36px;
-      padding: 0;
-      border-radius: 999px;
-      display:grid;
-      place-items:center;
-      font-size: 16px;
-      line-height: 1;
-      font-weight: 800;
-    }
-
-    /* Маленький переключатель режима репорта: 👁️ / 🖥️ (ОДНА кнопка) */
-    .reportModeBtn{
-      width: 36px;
-      height: 36px;
-      padding: 0;
-      border-radius: 999px;
-      display:grid;
-      place-items:center;
-      font-size: 16px;
-      line-height: 1;
-      font-weight: 700;
-      background: rgba(234,242,255,.06);
-      border: 1px solid rgba(234,242,255,.12);
-      color: rgba(234,242,255,.90);
-      cursor:pointer;
-      user-select:none;
-      transition: transform .08s ease, filter .12s ease;
-    }
-    .reportModeBtn:hover{ filter: brightness(1.06); }
-    .reportModeBtn:active{ transform: translateY(1px); }
-
-    /* Переключатель режима ВВОДА: Форма / По шагам */
-    .inputMode{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      user-select:none;
-    }
-    .inputModeBtn{
-      border:1px solid rgba(234,242,255,.12);
-      background: rgba(234,242,255,.06);
-      color: rgba(234,242,255,.80);
-      padding: 8px 10px;
-      border-radius: 999px;
-      cursor:pointer;
-      font-size: 13px;
-      user-select:none;
-      transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
-      white-space: nowrap;
-    }
-    .inputModeBtn:hover{ filter: brightness(1.06); }
-    .inputModeBtn:active{ transform: translateY(1px); }
-    .inputModeBtn.active{
-      border-color: rgba(89,195,255,.35);
-      background: rgba(89,195,255,.12);
+    /* ICON-ONLY controls: no halo, no frame */
+    .iconBtn{
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 6px 8px;
+      border-radius: 10px;
       color: rgba(234,242,255,.92);
+      cursor:pointer;
+      font-size: 16px;
+      line-height: 1;
+      user-select:none;
+      transition: transform .08s ease, opacity .12s ease;
     }
+    .iconBtn:hover{ opacity: .92; }
+    .iconBtn:active{ transform: translateY(1px); }
+    .iconBtn:focus{ outline: none; }
+    .iconBtn:focus-visible{ outline: 2px solid rgba(89,195,255,.35); outline-offset: 2px; }
 
     .seg{
       display:flex;
@@ -364,7 +323,7 @@
     .wizardTop{
       display:flex;
       justify-content:space-between;
-      alignitems:center;
+      align-items:center;
       gap:10px;
       flex-wrap:wrap;
       margin-bottom: 4px;
@@ -386,6 +345,15 @@
       user-select:none;
       cursor: default;
     }
+
+    /* Small top utility row */
+    .topRow{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap:10px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 
@@ -394,7 +362,7 @@
     <section class="card" id="mainCard">
 
       <div class="cardHead hidden" id="cardHead">
-        <button class="btn back" id="backBtn" type="button">← Назад</button>
+        <button class="btn back" id="backBtn" type="button" title="Назад" aria-label="Назад">← Назад</button>
       </div>
 
       <div class="cardBody">
@@ -402,31 +370,43 @@
         <!-- INPUT PANEL -->
         <div id="panelInput">
 
+          <!-- small icon controls (no halos) -->
+          <div class="topRow">
+            <button class="iconBtn" id="reportModeBtn" type="button"
+              title="Режим репорта: увидел / действовал" aria-label="Режим репорта: увидел / действовал">👁️</button>
+
+            <button class="iconBtn" id="toggleInputModeBtn" type="button"
+              title="Переключить режим ввода: форма / по шагам" aria-label="Переключить режим ввода: форма / по шагам">⇄</button>
+
+            <button class="iconBtn" id="demo" type="button"
+              title="Демо: заполнить / очистить" aria-label="Демо: заполнить / очистить">?</button>
+          </div>
+
           <!-- FORM MODE -->
           <div id="formMode">
-            <div class="q">
-              <label><span class="n">1</span> Контекст / шаги</label>
+            <div class="q" id="q1Block">
+              <label><span class="n" id="n1">1</span> <span id="l1">Что ты сделал?</span></label>
               <textarea id="q1"></textarea>
             </div>
 
-            <div class="q">
-              <label><span class="n">2</span> Что не так сейчас?</label>
+            <div class="q" id="q2Block">
+              <label><span class="n" id="n2">2</span> <span id="l2">Что произошло?</span></label>
               <textarea id="q2"></textarea>
             </div>
 
-            <div class="q">
-              <label><span class="n">3</span> Как должно быть?</label>
+            <div class="q" id="q3Block">
+              <label><span class="n" id="n3">3</span> <span id="l3">Как должно быть?</span></label>
               <textarea id="q3"></textarea>
             </div>
 
             <div class="row">
-              <div class="q" style="margin:0;">
-                <label><span class="n">4</span> Где это произошло?</label>
+              <div class="q" style="margin:0;" id="q4Block">
+                <label><span class="n" id="n4">4</span> <span id="l4">Где это произошло?</span></label>
                 <input id="q4" />
               </div>
 
-              <div class="q" style="margin:0;">
-                <label><span class="n">5</span> Насколько это критично?</label>
+              <div class="q" style="margin:0;" id="q5Block">
+                <label><span class="n" id="n5">5</span> <span id="l5">Насколько это критично?</span></label>
                 <select id="q5">
                   <option value="Low">Низко</option>
                   <option value="Medium" selected>Средне</option>
@@ -437,13 +417,13 @@
             </div>
 
             <div class="row">
-              <div class="q" style="margin:0;">
-                <label><span class="n">6</span> Устройство / версия</label>
+              <div class="q" style="margin:0;" id="envBlock">
+                <label><span class="n" id="n6">6</span> <span id="l6">Устройство / версия</span></label>
                 <input id="env" />
               </div>
 
-              <div class="q" style="margin:0;">
-                <label><span class="n">7</span> Тип бага</label>
+              <div class="q" style="margin:0;" id="typeBlock">
+                <label><span class="n" id="n7">7</span> <span id="l7">Тип бага</span></label>
                 <select id="type">
                   <option value="functional" selected>Функциональный</option>
                   <option value="ui">UI/Дизайн</option>
@@ -453,26 +433,9 @@
               </div>
             </div>
 
-            <div class="btnRow split">
-              <div class="btnGroup">
-                <button class="btn primary" id="genForm" type="button">Сгенерировать</button>
-                <button class="btn" id="newReport" type="button">Новый отчёт</button>
-              </div>
-
-              <div class="btnGroup">
-                <!-- как ты хотел: одинарная кнопка 👁️/🖥️ -->
-                <button class="reportModeBtn" id="reportModeBtn" type="button" title="Режим: увидел / действовал" aria-label="Режим: увидел / действовал">👁️</button>
-                <!-- ? как демо -->
-                <button class="btn ghost btnIcon" id="demo" type="button" aria-label="Демо" title="Демо">?</button>
-              </div>
-            </div>
-
-            <div class="btnRow" style="margin-top:10px;">
-              <div class="inputMode">
-                <button class="inputModeBtn active" id="modeForm" type="button">Форма</button>
-                <button class="inputModeBtn" id="modeWizard" type="button">По шагам</button>
-              </div>
-              <div class="small" id="modeHint" style="margin-top:0;">👁️ увидел</div>
+            <div class="btnRow">
+              <button class="btn primary" id="genForm" type="button" title="Сгенерировать отчёт" aria-label="Сгенерировать отчёт">Сгенерировать</button>
+              <button class="btn" id="newReport" type="button" title="Очистить форму" aria-label="Очистить форму">Новый отчёт</button>
             </div>
           </div>
 
@@ -489,29 +452,25 @@
               <div class="q" id="wizBox">
                 <label id="wizLabel"><span class="n" id="wizN">1</span> —</label>
                 <div id="wizField"></div>
-                <div class="small" id="wizHelp"></div>
               </div>
 
-              <div class="btnRow split">
-                <div class="btnGroup">
-                  <button class="btn ghost" id="wizBack" type="button">Назад</button>
-                  <button class="btn primary" id="wizNext" type="button">Далее</button>
-                  <button class="btn primary hidden" id="wizGen" type="button">Сгенерировать</button>
-                  <button class="btn" id="newReport2" type="button">Новый отчёт</button>
-                </div>
-
-                <div class="btnGroup">
-                  <button class="reportModeBtn" id="reportModeBtn2" type="button" title="Режим: увидел / действовал" aria-label="Режим: увидел / действовал">👁️</button>
-                  <button class="btn ghost btnIcon" id="demo2" type="button" aria-label="Демо" title="Демо">?</button>
-                </div>
+              <div class="btnRow">
+                <button class="btn ghost" id="wizBack" type="button" title="Назад" aria-label="Назад">Назад</button>
+                <button class="btn primary" id="wizNext" type="button" title="Далее" aria-label="Далее">Далее</button>
+                <button class="btn primary hidden" id="wizGen" type="button" title="Сгенерировать отчёт" aria-label="Сгенерировать отчёт">Сгенерировать</button>
+                <button class="btn" id="newReport2" type="button" title="Очистить" aria-label="Очистить">Новый отчёт</button>
               </div>
 
-              <div class="btnRow" style="margin-top:10px;">
-                <div class="inputMode">
-                  <button class="inputModeBtn" id="modeForm2" type="button">Форма</button>
-                  <button class="inputModeBtn active" id="modeWizard2" type="button">По шагам</button>
-                </div>
-                <div class="small" id="modeHint2" style="margin-top:0;">👁️ увидел</div>
+              <!-- keep icon controls available also here -->
+              <div class="topRow" style="justify-content:flex-end; margin-top:2px;">
+                <button class="iconBtn" id="reportModeBtn2" type="button"
+                  title="Режим репорта: увидел / действовал" aria-label="Режим репорта: увидел / действовал">👁️</button>
+
+                <button class="iconBtn" id="toggleInputModeBtn2" type="button"
+                  title="Переключить режим ввода: форма / по шагам" aria-label="Переключить режим ввода: форма / по шагам">⇄</button>
+
+                <button class="iconBtn" id="demo2" type="button"
+                  title="Демо: заполнить / очистить" aria-label="Демо: заполнить / очистить">?</button>
               </div>
             </div>
           </div>
@@ -521,8 +480,8 @@
         <!-- RESULT PANEL -->
         <div id="panelResult" class="hidden">
           <div class="seg">
-            <button class="segBtn active" id="showEN" type="button">EN</button>
-            <button class="segBtn" id="showRU" type="button">RU</button>
+            <button class="segBtn active" id="showEN" type="button" title="Показать EN" aria-label="Показать EN">EN</button>
+            <button class="segBtn" id="showRU" type="button" title="Показать RU" aria-label="Показать RU">RU</button>
           </div>
 
           <div class="outBlock" id="blockEN">
@@ -548,8 +507,8 @@
             <div class="small" id="afterText">—</div>
 
             <div class="btnRow">
-              <button class="btn primary" id="goVocab" type="button">Перейти в словарь</button>
-              <button class="btn" id="newReport3" type="button">Новый отчёт</button>
+              <button class="btn primary" id="goVocab" type="button" title="Открыть словарь" aria-label="Открыть словарь">Перейти в словарь</button>
+              <button class="btn" id="newReport3" type="button" title="Очистить" aria-label="Очистить">Новый отчёт</button>
             </div>
           </div>
         </div>
@@ -562,9 +521,8 @@
               <span class="small" id="vocNewCountPill">0</span>
             </div>
             <pre id="outVNew">—</pre>
-
             <div class="btnRow" style="margin-top:10px;">
-              <button class="btn primary" id="copyNew" type="button">Copy new</button>
+              <button class="btn primary" id="copyNew" type="button" title="Скопировать новые" aria-label="Скопировать новые">Copy new</button>
             </div>
           </div>
 
@@ -576,9 +534,9 @@
             <pre id="outVAll">—</pre>
 
             <div class="btnRow" style="margin-top:10px;">
-              <button class="btn primary" id="copyAll" type="button">Copy all</button>
-              <button class="btn" id="newReport4" type="button">Новый отчёт</button>
-              <button class="btn danger" id="resetVocab3" type="button">Сбросить словарь</button>
+              <button class="btn primary" id="copyAll" type="button" title="Скопировать все" aria-label="Скопировать все">Copy all</button>
+              <button class="btn" id="newReport4" type="button" title="Новый отчёт" aria-label="Новый отчёт">Новый отчёт</button>
+              <button class="btn danger" id="resetVocab3" type="button" title="Сбросить словарь" aria-label="Сбросить словарь">Сбросить словарь</button>
             </div>
           </div>
         </div>
@@ -596,7 +554,6 @@
 
   // ========= utils =========
   const $ = (id) => document.getElementById(id);
-  function on(id, evt, fn){ const el = $(id); if(el) el.addEventListener(evt, fn); }
   function toast(msg){
     const t = $("toast");
     t.textContent = msg;
@@ -633,8 +590,13 @@
   }
 
   function focusFirstInput(){
-    if(state.inputMode === "form") $("q1").focus();
-    else wizardFocus();
+    if(state.inputMode === "form"){
+      // In observe mode, q1 is hidden; focus first visible textarea
+      if(state.reportMode === "observe") $("q2").focus();
+      else $("q1").focus();
+    }else{
+      wizardFocus();
+    }
   }
 
   // ========= click empty area -> blur =========
@@ -652,36 +614,31 @@
   document.addEventListener("click", blurIfClickedOnEmptyArea, true);
 
   // ========= back =========
-  on("backBtn","click", ()=>{
+  $("backBtn").addEventListener("click", ()=>{
     if(state.tab === "vocab") setTab("result");
     else setTab("input");
   });
 
-  // ========= input mode (Форма / По шагам) =========
+  // ========= input mode toggle (one button) =========
   function setInputMode(mode){
     state.inputMode = mode;
-
     const isForm = mode === "form";
     $("formMode").classList.toggle("hidden", !isForm);
     $("wizardMode").classList.toggle("hidden", isForm);
-
-    $("modeForm").classList.toggle("active", isForm);
-    $("modeWizard").classList.toggle("active", !isForm);
-    $("modeForm2").classList.toggle("active", isForm);
-    $("modeWizard2").classList.toggle("active", !isForm);
-
     if(!isForm){
+      state.wizardStep = Math.min(state.wizardStep, getWizardSteps().length - 1);
       renderWizard();
       wizardFocus();
     }else{
-      $("q1").focus();
+      focusFirstInput();
     }
   }
-
-  on("modeForm","click", ()=>setInputMode("form"));
-  on("modeWizard","click", ()=>setInputMode("wizard"));
-  on("modeForm2","click", ()=>setInputMode("form"));
-  on("modeWizard2","click", ()=>setInputMode("wizard"));
+  function toggleInputMode(){
+    setInputMode(state.inputMode === "form" ? "wizard" : "form");
+    toast(state.inputMode === "form" ? "Форма" : "По шагам");
+  }
+  $("toggleInputModeBtn").addEventListener("click", toggleInputMode);
+  $("toggleInputModeBtn2").addEventListener("click", toggleInputMode);
 
   // ========= report mode toggle (👁️ / 🖥️) =========
   function renderReportModeUI(){
@@ -689,16 +646,64 @@
     const icon = isInteract ? "🖥️" : "👁️";
     $("reportModeBtn").textContent = icon;
     $("reportModeBtn2").textContent = icon;
-    $("modeHint").textContent = isInteract ? "🖥️ действовал" : "👁️ увидел";
-    $("modeHint2").textContent = isInteract ? "🖥️ действовал" : "👁️ увидел";
+
+    // tooltips (update text)
+    const title = isInteract ? "Режим репорта: действовал (есть шаги)" : "Режим репорта: увидел (без действий)";
+    $("reportModeBtn").title = title;
+    $("reportModeBtn2").title = title;
+    $("reportModeBtn").setAttribute("aria-label", title);
+    $("reportModeBtn2").setAttribute("aria-label", title);
+
+    applyQuestionLayout();
+    if(state.inputMode === "wizard"){
+      state.wizardStep = 0;
+      renderWizard();
+    }
   }
+
   function toggleReportMode(){
     state.reportMode = (state.reportMode === "observe") ? "interact" : "observe";
     renderReportModeUI();
+    focusFirstInput();
   }
-  on("reportModeBtn","click", toggleReportMode);
-  on("reportModeBtn2","click", toggleReportMode);
-  renderReportModeUI();
+
+  $("reportModeBtn").addEventListener("click", toggleReportMode);
+  $("reportModeBtn2").addEventListener("click", toggleReportMode);
+
+  // ========= question layout by mode =========
+  function applyQuestionLayout(){
+    const observe = state.reportMode === "observe";
+
+    // hide/show q1 in form
+    $("q1Block").classList.toggle("hidden", observe);
+
+    // labels + numbering in form
+    const map = observe
+      ? {
+          // q2 becomes #1, etc
+          n2:"1", l2:"Что не так сейчас?",
+          n3:"2", l3:"Как должно быть?",
+          n4:"3", l4:"Где это произошло?",
+          n5:"4", l5:"Насколько это критично?",
+          n6:"5", l6:"Устройство / версия",
+          n7:"6", l7:"Тип бага"
+        }
+      : {
+          n1:"1", l1:"Что ты сделал?",
+          n2:"2", l2:"Что произошло?",
+          n3:"3", l3:"Как должно быть?",
+          n4:"4", l4:"Где это произошло?",
+          n5:"5", l5:"Насколько это критично?",
+          n6:"6", l6:"Устройство / версия",
+          n7:"7", l7:"Тип бага"
+        };
+
+    // set only relevant nodes
+    for(const [id,val] of Object.entries(map)){
+      const el = $(id);
+      if(el) el.textContent = val;
+    }
+  }
 
   // ========= local vocab storage =========
   const LS_ALL = "bugTrainer_allVocab_ai_v1";
@@ -733,13 +738,13 @@
     $("blockEN").classList.toggle("hidden", !en);
     $("blockRU").classList.toggle("hidden", en);
   }
-  on("showEN","click", ()=>setResultView("en"));
-  on("showRU","click", ()=>setResultView("ru"));
+  $("showEN").addEventListener("click", ()=>setResultView("en"));
+  $("showRU").addEventListener("click", ()=>setResultView("ru"));
 
   // ========= collect inputs =========
   function gatherInputs(){
     return {
-      mode: state.reportMode,
+      mode: state.reportMode,                 // observe | interact
       type: $("type").value,
       severity: $("q5").value,
       location_ru: cleanSpaces($("q4").value),
@@ -751,6 +756,7 @@
   }
 
   function validateInputs(data){
+    // In observe mode, q1 is not used; core remains q2+q3
     if(!data.q2 || !data.q3){
       toast("Заполни: что не так сейчас + как должно быть");
       return false;
@@ -763,15 +769,19 @@
     state.demoOn = !state.demoOn;
 
     if(state.demoOn){
-      $("q1").value = 'Открыл страницу и нажал кнопку "Sign in".';
-      $("q2").value = "Ничего не произошло, приложение зависло.";
-      $("q3").value = "Должно было появиться окно логина и пароля.";
+      // fill by current reportMode (so demo matches visible questions)
+      if(state.reportMode === "observe"){
+        $("q2").value = 'На главной странице текст кнопки "Sign in" перекрывается и съезжает.';
+        $("q3").value = 'Текст должен быть выровнен и не перекрываться.';
+      }else{
+        $("q1").value = 'Открыл страницу и нажал кнопку "Sign in".';
+        $("q2").value = "Ничего не произошло, приложение зависло.";
+        $("q3").value = "Должно было появиться окно логина и пароля.";
+      }
       $("q4").value = "на главном экране";
       $("q5").value = "High";
       $("env").value = "iPhone 13, iOS 18.2, App v1.2.0";
-      $("type").value = "crash";
-      state.reportMode = "interact";
-      renderReportModeUI();
+      $("type").value = (state.reportMode === "observe") ? "ui" : "crash";
       toast("Демо заполнено");
     }else{
       $("q1").value = "";
@@ -781,13 +791,19 @@
       $("env").value = "";
       $("q5").value = "Medium";
       $("type").value = "functional";
-      state.reportMode = "observe";
-      renderReportModeUI();
       toast("Демо очищено");
     }
+
+    if(state.inputMode === "wizard"){
+      state.wizardStep = 0;
+      renderWizard();
+      wizardFocus();
+    }else{
+      focusFirstInput();
+    }
   }
-  on("demo","click", demo);
-  on("demo2","click", demo);
+  $("demo").addEventListener("click", demo);
+  $("demo2").addEventListener("click", demo);
 
   // ========= AI call =========
   function setLoading(isLoading){
@@ -868,7 +884,7 @@
     }
   }
 
-  on("genForm","click", generateAI);
+  $("genForm").addEventListener("click", generateAI);
 
   // ========= vocab panel =========
   function renderVocabPanel(){
@@ -896,10 +912,14 @@
 
     state.demoOn = false;
     state.lastNewVocab = [];
-    state.reportMode = "observe";
-    renderReportModeUI();
+
+    if(state.inputMode === "wizard"){
+      state.wizardStep = 0;
+      renderWizard();
+    }
 
     setTab("input");
+    focusFirstInput();
     toast("Новый отчёт");
   }
 
@@ -927,40 +947,59 @@
     }
   }
 
-  on("goVocab","click", ()=>setTab("vocab"));
+  $("goVocab").addEventListener("click", ()=>setTab("vocab"));
 
-  ["newReport","newReport2","newReport3","newReport4"].forEach(id=> on(id,"click", newReport));
-  on("resetVocab3","click", resetVocab);
+  ["newReport","newReport2","newReport3","newReport4"].forEach(id=>{
+    $(id).addEventListener("click", newReport);
+  });
+  $("resetVocab3").addEventListener("click", resetVocab);
 
-  on("copyNew","click", ()=>{
+  $("copyNew").addEventListener("click", ()=>{
     const newLines = (state.lastNewVocab || []).map(x => `${x.en} — ${x.ru}`).join("\n");
     copyText(newLines);
   });
-  on("copyAll","click", ()=>{
+  $("copyAll").addEventListener("click", ()=>{
     const allText = loadAllVocab().join("\n");
     copyText(allText);
   });
 
-  // ========= wizard =========
-  const WIZ_STEPS = [
-    { key:"q1", label:"Контекст / шаги", help:"Коротко: где/когда/что делал или что увидел.", type:"textarea" },
-    { key:"q2", label:"Что не так сейчас?", help:"Факт, что наблюдаешь.", type:"textarea" },
-    { key:"q3", label:"Как должно быть?", help:"Ожидание.", type:"textarea" },
-    { key:"q4", label:"Где это произошло?", help:"Экран/страница/блок.", type:"input" },
-    { key:"q5", label:"Насколько это критично?", help:"Выбери уровень.", type:"select",
-      options:[ ["Low","Низко"], ["Medium","Средне"], ["High","Высоко"], ["Critical","Критично"] ] },
-    { key:"env", label:"Устройство / версия", help:"Опционально.", type:"input" },
-    { key:"type", label:"Тип бага", help:"Выбери тип.", type:"select",
-      options:[ ["functional","Функциональный"], ["ui","UI/Дизайн"], ["typo","Орфография/Текст"], ["crash","Краш/Зависание"] ] }
-  ];
+  // ========= wizard steps depend on reportMode =========
+  function getWizardSteps(){
+    if(state.reportMode === "observe"){
+      // 6 steps (no q1)
+      return [
+        { key:"q2", label:"Что не так сейчас?", type:"textarea" },
+        { key:"q3", label:"Как должно быть?", type:"textarea" },
+        { key:"q4", label:"Где это произошло?", type:"input" },
+        { key:"q5", label:"Насколько это критично?", type:"select",
+          options:[ ["Low","Низко"], ["Medium","Средне"], ["High","Высоко"], ["Critical","Критично"] ] },
+        { key:"env", label:"Устройство / версия", type:"input" },
+        { key:"type", label:"Тип бага", type:"select",
+          options:[ ["functional","Функциональный"], ["ui","UI/Дизайн"], ["typo","Орфография/Текст"], ["crash","Краш/Зависание"] ] }
+      ];
+    }
+    // interact: 7 steps
+    return [
+      { key:"q1", label:"Что ты сделал?", type:"textarea" },
+      { key:"q2", label:"Что произошло?", type:"textarea" },
+      { key:"q3", label:"Как должно быть?", type:"textarea" },
+      { key:"q4", label:"Где это произошло?", type:"input" },
+      { key:"q5", label:"Насколько это критично?", type:"select",
+        options:[ ["Low","Низко"], ["Medium","Средне"], ["High","Высоко"], ["Critical","Критично"] ] },
+      { key:"env", label:"Устройство / версия", type:"input" },
+      { key:"type", label:"Тип бага", type:"select",
+        options:[ ["functional","Функциональный"], ["ui","UI/Дизайн"], ["typo","Орфография/Текст"], ["crash","Краш/Зависание"] ] }
+    ];
+  }
 
   function renderWizard(){
-    const idx = state.wizardStep;
-    const step = WIZ_STEPS[idx];
+    const steps = getWizardSteps();
+    const idx = Math.max(0, Math.min(state.wizardStep, steps.length - 1));
+    state.wizardStep = idx;
+    const step = steps[idx];
 
-    $("wizProgress").textContent = `Шаг ${idx+1}/${WIZ_STEPS.length}`;
+    $("wizProgress").textContent = `Шаг ${idx+1}/${steps.length}`;
     $("wizLabel").innerHTML = `<span class="n" id="wizN">${idx+1}</span> ${step.label}`;
-    $("wizHelp").textContent = step.help || "";
 
     const host = $("wizField");
     host.innerHTML = "";
@@ -990,7 +1029,7 @@
     host.appendChild(el);
 
     $("wizBack").disabled = (idx === 0);
-    const last = (idx === WIZ_STEPS.length - 1);
+    const last = (idx === steps.length - 1);
     $("wizNext").classList.toggle("hidden", last);
     $("wizGen").classList.toggle("hidden", !last);
 
@@ -1009,7 +1048,8 @@
   }
 
   function wizardNext(){
-    if(state.wizardStep < WIZ_STEPS.length - 1){
+    const steps = getWizardSteps();
+    if(state.wizardStep < steps.length - 1){
       state.wizardStep += 1;
       renderWizard();
       wizardFocus();
@@ -1023,11 +1063,13 @@
     }
   }
 
-  on("wizNext","click", wizardNext);
-  on("wizBack","click", wizardBack);
-  on("wizGen","click", generateAI);
+  $("wizNext").addEventListener("click", wizardNext);
+  $("wizBack").addEventListener("click", wizardBack);
+  $("wizGen").addEventListener("click", generateAI);
 
-  // init
+  // ========= init =========
+  applyQuestionLayout();
+  renderReportModeUI();
   setTab("input");
   setInputMode("form");
   $("sevPill").textContent = "—";
