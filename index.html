@@ -33,6 +33,8 @@
       -webkit-font-smoothing:antialiased;
       -webkit-text-size-adjust:100%;
       overflow-x:hidden;
+
+      /* fix: caret showing in non-input areas */
       caret-color: transparent;
     }
     textarea, input, select{ caret-color: var(--text); }
@@ -211,58 +213,53 @@
       font-weight: 800;
     }
 
-    /* Тумблер режима репорта (👁️ / 🖥️) — БЕЗ внешней капсулы */
-    .modeToggle{
-      border: none;
-      background: transparent;
+    /* Маленький переключатель режима репорта: 👁️ / 🖥️ (ОДНА кнопка) */
+    .reportModeBtn{
+      width: 36px;
+      height: 36px;
       padding: 0;
-      border-radius: 0;
+      border-radius: 999px;
+      display:grid;
+      place-items:center;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 700;
+      background: rgba(234,242,255,.06);
+      border: 1px solid rgba(234,242,255,.12);
+      color: rgba(234,242,255,.90);
       cursor:pointer;
-      display:flex;
-      align-items:center;
       user-select:none;
       transition: transform .08s ease, filter .12s ease;
     }
-    .modeToggle:hover{ filter: brightness(1.06); }
-    .modeToggle:active{ transform: translateY(1px); }
+    .reportModeBtn:hover{ filter: brightness(1.06); }
+    .reportModeBtn:active{ transform: translateY(1px); }
 
-    .switch{
-      width: 62px;
-      height: 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(89,195,255,.22);
-      background: rgba(89,195,255,.08);
-      position: relative;
-      flex: 0 0 auto;
-      overflow:hidden;
-    }
-    .switch .icons{
-      position:absolute;
-      inset:0;
+    /* Переключатель режима ВВОДА: Форма / По шагам */
+    .inputMode{
       display:flex;
+      gap:8px;
       align-items:center;
-      justify-content:space-between;
-      padding: 0 8px;
-      font-size: 14px;
-      opacity:.85;
-      pointer-events:none;
+      user-select:none;
     }
-    .knob{
-      width: 22px;
-      height: 22px;
+    .inputModeBtn{
+      border:1px solid rgba(234,242,255,.12);
+      background: rgba(234,242,255,.06);
+      color: rgba(234,242,255,.80);
+      padding: 8px 10px;
       border-radius: 999px;
-      position: absolute;
-      top: 1px;
-      left: 1px;
-      background: rgba(234,242,255,.88);
-      transition: left .14s ease;
-      box-shadow: 0 8px 20px rgba(0,0,0,.35);
+      cursor:pointer;
+      font-size: 13px;
+      user-select:none;
+      transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
+      white-space: nowrap;
     }
-    .modeToggle.on .switch{
-      background: linear-gradient(180deg, rgba(89,195,255,.26), rgba(89,195,255,.12));
-      border-color: rgba(89,195,255,.40);
+    .inputModeBtn:hover{ filter: brightness(1.06); }
+    .inputModeBtn:active{ transform: translateY(1px); }
+    .inputModeBtn.active{
+      border-color: rgba(89,195,255,.35);
+      background: rgba(89,195,255,.12);
+      color: rgba(234,242,255,.92);
     }
-    .modeToggle.on .knob{ left: 39px; }
 
     .seg{
       display:flex;
@@ -334,6 +331,8 @@
       font-size: 12px;
       line-height: 1.35;
       margin-top: 8px;
+      user-select:none;
+      cursor: default;
     }
 
     .toast{
@@ -406,17 +405,17 @@
           <!-- FORM MODE -->
           <div id="formMode">
             <div class="q">
-              <label id="label1"><span class="n">1</span> Контекст / шаги</label>
+              <label><span class="n">1</span> Контекст / шаги</label>
               <textarea id="q1"></textarea>
             </div>
 
             <div class="q">
-              <label id="label2"><span class="n">2</span> Что не так сейчас?</label>
+              <label><span class="n">2</span> Что не так сейчас?</label>
               <textarea id="q2"></textarea>
             </div>
 
             <div class="q">
-              <label id="label3"><span class="n">3</span> Как должно быть?</label>
+              <label><span class="n">3</span> Как должно быть?</label>
               <textarea id="q3"></textarea>
             </div>
 
@@ -459,23 +458,25 @@
                 <button class="btn primary" id="genForm" type="button">Сгенерировать</button>
                 <button class="btn" id="newReport" type="button">Новый отчёт</button>
               </div>
+
               <div class="btnGroup">
-                <!-- Поменяли местами: тумблер, потом ? ближе к краю -->
-                <button class="modeToggle" id="reportModeToggle" type="button"
-                        aria-label="Режим репорта (увидел / действовал)" aria-pressed="false" title="Режим репорта">
-                  <span class="switch" aria-hidden="true">
-                    <span class="icons">👁️<span style="opacity:.0;">.</span>🖥️</span>
-                    <span class="knob"></span>
-                  </span>
-                </button>
+                <!-- как ты хотел: одинарная кнопка 👁️/🖥️ -->
+                <button class="reportModeBtn" id="reportModeBtn" type="button" title="Режим: увидел / действовал" aria-label="Режим: увидел / действовал">👁️</button>
+                <!-- ? как демо -->
                 <button class="btn ghost btnIcon" id="demo" type="button" aria-label="Демо" title="Демо">?</button>
               </div>
             </div>
 
-            <div class="small" id="modeHint">Режим: 👁️ увидел (без действий)</div>
+            <div class="btnRow" style="margin-top:10px;">
+              <div class="inputMode">
+                <button class="inputModeBtn active" id="modeForm" type="button">Форма</button>
+                <button class="inputModeBtn" id="modeWizard" type="button">По шагам</button>
+              </div>
+              <div class="small" id="modeHint" style="margin-top:0;">👁️ увидел</div>
+            </div>
           </div>
 
-          <!-- WIZARD MODE (оставили как есть, но он теперь просто "по шагам ввода", если захочешь вернуть позже) -->
+          <!-- WIZARD MODE -->
           <div id="wizardMode" class="hidden">
             <div class="wizardShell">
               <div class="wizardTop">
@@ -500,18 +501,18 @@
                 </div>
 
                 <div class="btnGroup">
-                  <button class="modeToggle on" id="reportModeToggle2" type="button"
-                          aria-label="Режим репорта (увидел / действовал)" aria-pressed="true" title="Режим репорта">
-                    <span class="switch" aria-hidden="true">
-                      <span class="icons">👁️<span style="opacity:.0;">.</span>🖥️</span>
-                      <span class="knob"></span>
-                    </span>
-                  </button>
+                  <button class="reportModeBtn" id="reportModeBtn2" type="button" title="Режим: увидел / действовал" aria-label="Режим: увидел / действовал">👁️</button>
                   <button class="btn ghost btnIcon" id="demo2" type="button" aria-label="Демо" title="Демо">?</button>
                 </div>
               </div>
 
-              <div class="small" id="modeHint2">Режим: 👁️ увидел (без действий)</div>
+              <div class="btnRow" style="margin-top:10px;">
+                <div class="inputMode">
+                  <button class="inputModeBtn" id="modeForm2" type="button">Форма</button>
+                  <button class="inputModeBtn active" id="modeWizard2" type="button">По шагам</button>
+                </div>
+                <div class="small" id="modeHint2" style="margin-top:0;">👁️ увидел</div>
+              </div>
             </div>
           </div>
 
@@ -555,7 +556,6 @@
 
         <!-- VOCAB PANEL -->
         <div id="panelVocab" class="hidden">
-
           <div class="outBlock">
             <div class="outTitle">
               <span style="display:flex; align-items:center; gap:10px;"><span class="dot warn"></span> Новые (этот отчёт)</span>
@@ -581,7 +581,6 @@
               <button class="btn danger" id="resetVocab3" type="button">Сбросить словарь</button>
             </div>
           </div>
-
         </div>
 
       </div>
@@ -592,30 +591,24 @@
 
 <script>
   // ========= CONFIG =========
-  // 1) Сюда вставь URL своего Cloudflare Worker endpoint (после деплоя)
   const AI_ENDPOINT = "https://YOUR-WORKER.SUBDOMAIN.workers.dev"; // <-- поменяй
-
-  // 2) Если включишь APP_TOKEN в Worker, задай тут тот же токен
-  //    (можно оставить пустым, если в Worker APP_TOKEN не задан)
-  const APP_TOKEN = ""; // например: "my-super-long-token"
+  const APP_TOKEN = ""; // если используешь APP_TOKEN в Worker (можно оставить пустым)
 
   // ========= utils =========
   const $ = (id) => document.getElementById(id);
   function on(id, evt, fn){ const el = $(id); if(el) el.addEventListener(evt, fn); }
-
   function toast(msg){
     const t = $("toast");
     t.textContent = msg;
     t.classList.add("show");
     setTimeout(()=>t.classList.remove("show"), 1400);
   }
-
   function cleanSpaces(s){ return (s||"").replace(/\s+/g," ").trim(); }
 
   // ========= state =========
   const state = {
     tab: "input",           // input | result | vocab
-    inputMode: "form",      // form | wizard (wizard оставлен, но не обязателен)
+    inputMode: "form",      // form | wizard
     wizardStep: 0,
     reportMode: "observe",  // observe | interact
     demoOn: false,
@@ -664,30 +657,51 @@
     else setTab("input");
   });
 
-  // ========= report mode toggle (👁️ / 🖥️) =========
-  function renderReportModeUI(){
-    const onInteract = (state.reportMode === "interact");
-    $("reportModeToggle").classList.toggle("on", onInteract);
-    $("reportModeToggle").setAttribute("aria-pressed", String(onInteract));
-    $("modeHint").textContent = onInteract ? "Режим: 🖥️ действовал (воспроизвёл)" : "Режим: 👁️ увидел (без действий)";
+  // ========= input mode (Форма / По шагам) =========
+  function setInputMode(mode){
+    state.inputMode = mode;
 
-    $("reportModeToggle2").classList.toggle("on", onInteract);
-    $("reportModeToggle2").setAttribute("aria-pressed", String(onInteract));
-    $("modeHint2").textContent = onInteract ? "Режим: 🖥️ действовал (воспроизвёл)" : "Режим: 👁️ увидел (без действий)";
+    const isForm = mode === "form";
+    $("formMode").classList.toggle("hidden", !isForm);
+    $("wizardMode").classList.toggle("hidden", isForm);
+
+    $("modeForm").classList.toggle("active", isForm);
+    $("modeWizard").classList.toggle("active", !isForm);
+    $("modeForm2").classList.toggle("active", isForm);
+    $("modeWizard2").classList.toggle("active", !isForm);
+
+    if(!isForm){
+      renderWizard();
+      wizardFocus();
+    }else{
+      $("q1").focus();
+    }
   }
 
+  on("modeForm","click", ()=>setInputMode("form"));
+  on("modeWizard","click", ()=>setInputMode("wizard"));
+  on("modeForm2","click", ()=>setInputMode("form"));
+  on("modeWizard2","click", ()=>setInputMode("wizard"));
+
+  // ========= report mode toggle (👁️ / 🖥️) =========
+  function renderReportModeUI(){
+    const isInteract = state.reportMode === "interact";
+    const icon = isInteract ? "🖥️" : "👁️";
+    $("reportModeBtn").textContent = icon;
+    $("reportModeBtn2").textContent = icon;
+    $("modeHint").textContent = isInteract ? "🖥️ действовал" : "👁️ увидел";
+    $("modeHint2").textContent = isInteract ? "🖥️ действовал" : "👁️ увидел";
+  }
   function toggleReportMode(){
     state.reportMode = (state.reportMode === "observe") ? "interact" : "observe";
     renderReportModeUI();
   }
-
-  on("reportModeToggle","click", toggleReportMode);
-  on("reportModeToggle2","click", toggleReportMode);
+  on("reportModeBtn","click", toggleReportMode);
+  on("reportModeBtn2","click", toggleReportMode);
   renderReportModeUI();
 
   // ========= local vocab storage =========
   const LS_ALL = "bugTrainer_allVocab_ai_v1";
-
   function loadAllVocab(){
     try{
       const raw = localStorage.getItem(LS_ALL);
@@ -809,7 +823,9 @@
 
       const json = await resp.json().catch(()=> ({}));
       if(!resp.ok){
-        const msg = json && (json.error || json.detail) ? (json.error + (json.detail ? (": " + json.detail) : "")) : "Ошибка AI";
+        const msg = json && (json.error || json.detail)
+          ? (json.error + (json.detail ? (": " + json.detail) : ""))
+          : "Ошибка AI";
         $("outEN").textContent = "—";
         $("outRU").textContent = "—";
         toast(msg.slice(0,120));
@@ -818,7 +834,6 @@
         return;
       }
 
-      // ожидаем: { en_report, ru_report, new_vocab:[{en,ru}] }
       const en = (json.en_report || "—").trim();
       const ru = (json.ru_report || "—").trim();
       const newVocab = Array.isArray(json.new_vocab) ? json.new_vocab : [];
@@ -826,7 +841,6 @@
       $("outEN").textContent = en || "—";
       $("outRU").textContent = ru || "—";
 
-      // vocab: новое + накопительное
       state.lastNewVocab = newVocab
         .filter(x=>x && x.en && x.ru)
         .slice(0,15);
@@ -927,8 +941,95 @@
     copyText(allText);
   });
 
+  // ========= wizard =========
+  const WIZ_STEPS = [
+    { key:"q1", label:"Контекст / шаги", help:"Коротко: где/когда/что делал или что увидел.", type:"textarea" },
+    { key:"q2", label:"Что не так сейчас?", help:"Факт, что наблюдаешь.", type:"textarea" },
+    { key:"q3", label:"Как должно быть?", help:"Ожидание.", type:"textarea" },
+    { key:"q4", label:"Где это произошло?", help:"Экран/страница/блок.", type:"input" },
+    { key:"q5", label:"Насколько это критично?", help:"Выбери уровень.", type:"select",
+      options:[ ["Low","Низко"], ["Medium","Средне"], ["High","Высоко"], ["Critical","Критично"] ] },
+    { key:"env", label:"Устройство / версия", help:"Опционально.", type:"input" },
+    { key:"type", label:"Тип бага", help:"Выбери тип.", type:"select",
+      options:[ ["functional","Функциональный"], ["ui","UI/Дизайн"], ["typo","Орфография/Текст"], ["crash","Краш/Зависание"] ] }
+  ];
+
+  function renderWizard(){
+    const idx = state.wizardStep;
+    const step = WIZ_STEPS[idx];
+
+    $("wizProgress").textContent = `Шаг ${idx+1}/${WIZ_STEPS.length}`;
+    $("wizLabel").innerHTML = `<span class="n" id="wizN">${idx+1}</span> ${step.label}`;
+    $("wizHelp").textContent = step.help || "";
+
+    const host = $("wizField");
+    host.innerHTML = "";
+
+    let el;
+    if(step.type === "textarea"){
+      el = document.createElement("textarea");
+      el.value = $(step.key).value;
+      el.addEventListener("input", ()=>{ $(step.key).value = el.value; });
+    }else if(step.type === "input"){
+      el = document.createElement("input");
+      el.value = $(step.key).value;
+      el.addEventListener("input", ()=>{ $(step.key).value = el.value; });
+    }else if(step.type === "select"){
+      el = document.createElement("select");
+      step.options.forEach(([val, txt])=>{
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = txt;
+        el.appendChild(opt);
+      });
+      el.value = $(step.key).value;
+      el.addEventListener("change", ()=>{ $(step.key).value = el.value; });
+    }
+
+    el.id = "wizActiveField";
+    host.appendChild(el);
+
+    $("wizBack").disabled = (idx === 0);
+    const last = (idx === WIZ_STEPS.length - 1);
+    $("wizNext").classList.toggle("hidden", last);
+    $("wizGen").classList.toggle("hidden", !last);
+
+    el.addEventListener("keydown", (e)=>{
+      if(e.key !== "Enter") return;
+      if(step.type === "textarea" && e.shiftKey) return;
+      e.preventDefault();
+      if(last) generateAI();
+      else wizardNext();
+    });
+  }
+
+  function wizardFocus(){
+    const el = $("wizActiveField");
+    if(el) el.focus();
+  }
+
+  function wizardNext(){
+    if(state.wizardStep < WIZ_STEPS.length - 1){
+      state.wizardStep += 1;
+      renderWizard();
+      wizardFocus();
+    }
+  }
+  function wizardBack(){
+    if(state.wizardStep > 0){
+      state.wizardStep -= 1;
+      renderWizard();
+      wizardFocus();
+    }
+  }
+
+  on("wizNext","click", wizardNext);
+  on("wizBack","click", wizardBack);
+  on("wizGen","click", generateAI);
+
   // init
   setTab("input");
+  setInputMode("form");
   $("sevPill").textContent = "—";
   $("envPill").textContent = "Env: —";
 </script>
