@@ -60,15 +60,16 @@
       margin-top: 14px;
     }
 
+    /* Шапка нужна только вне "Ввода" (когда показываем кнопку Назад) */
     .cardHead{
-      padding: 14px 16px 12px;
-      border-bottom:1px solid rgba(140,195,255,.10);
+      padding: 12px 14px 0;
       display:flex;
       align-items:center;
       justify-content:flex-start;
-      gap:10px;
     }
-    .cardBody{ padding: 12px 14px 14px; }
+
+    /* Важное: одинаковый верх/низ отступы, без "лишней полосы" сверху */
+    .cardBody{ padding: 14px; }
 
     .hidden{ display:none !important; }
 
@@ -199,7 +200,7 @@
       color: rgba(234,242,255,.86);
     }
 
-    /* переключатель режима (форма <-> шаги) */
+    /* Переключатель режима: без текста, только тумблер */
     .modeToggle{
       border:1px solid rgba(234,242,255,.12);
       background: rgba(234,242,255,.06);
@@ -209,10 +210,8 @@
       cursor:pointer;
       display:flex;
       align-items:center;
-      gap:10px;
       user-select:none;
       transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
-      font-size: 13px;
       white-space: nowrap;
     }
     .modeToggle:hover{ filter: brightness(1.06); }
@@ -373,8 +372,10 @@
 <body>
   <div class="wrap">
     <section class="card" id="mainCard">
-      <div class="cardHead">
-        <button class="btn back hidden" id="backBtn" type="button">← Назад</button>
+
+      <!-- Шапка появляется только когда нужна кнопка "Назад" -->
+      <div class="cardHead hidden" id="cardHead">
+        <button class="btn back" id="backBtn" type="button">← Назад</button>
       </div>
 
       <div class="cardBody">
@@ -433,18 +434,19 @@
               </div>
             </div>
 
-            <!-- Нижний ряд: генерация + режим + демо -->
+            <!-- Нижний ряд: демо ближе, переключатель дальше (после демо) -->
             <div class="btnRow split">
               <div class="btnGroup">
                 <button class="btn primary" id="genForm" type="button">Сгенерировать</button>
                 <button class="btn" id="newReport" type="button">Новый отчёт</button>
               </div>
               <div class="btnGroup">
-                <button class="modeToggle" id="modeToggle" type="button" aria-pressed="false" title="Переключить режим">
-                  <span class="switch" aria-hidden="true"><span class="knob"></span></span>
-                  <span id="modeText">Форма</span>
-                </button>
                 <button class="btn ghost" id="demo" type="button">Демо</button>
+                <button class="modeToggle" id="modeToggle" type="button"
+                        aria-label="Переключить режим (форма / по шагам)"
+                        aria-pressed="false" title="Переключить режим">
+                  <span class="switch" aria-hidden="true"><span class="knob"></span></span>
+                </button>
               </div>
             </div>
           </div>
@@ -474,9 +476,11 @@
                 </div>
 
                 <div class="btnGroup">
-                  <button class="modeToggle on" id="modeToggle2" type="button" aria-pressed="true" title="Переключить режим">
+                  <button class="btn ghost" id="demo2" type="button">Демо</button>
+                  <button class="modeToggle on" id="modeToggle2" type="button"
+                          aria-label="Переключить режим (форма / по шагам)"
+                          aria-pressed="true" title="Переключить режим">
                     <span class="switch" aria-hidden="true"><span class="knob"></span></span>
-                    <span id="modeText2">По шагам</span>
                   </button>
                 </div>
               </div>
@@ -589,11 +593,13 @@
 
   function setTab(name){
     state.tab = name;
+
     Object.entries(panels).forEach(([k, el])=>{
       el.classList.toggle("hidden", k !== name);
     });
 
-    $("backBtn").classList.toggle("hidden", name === "input");
+    // Ввод: шапку вообще убираем => исчезает лишняя "полоса" и отступ сверху
+    $("cardHead").classList.toggle("hidden", name === "input");
 
     if(name === "input") focusFirstInput();
   }
@@ -605,24 +611,12 @@
 
   function getDynamicLabels(type){
     if(type === "typo"){
-      return {
-        q1: "Контекст (где увидел текст?)",
-        q2: "Как написано сейчас?",
-        q3: "Как должно быть?"
-      };
+      return { q1:"Контекст (где увидел текст?)", q2:"Как написано сейчас?", q3:"Как должно быть?" };
     }
     if(type === "ui"){
-      return {
-        q1: "Контекст (что было открыто?)",
-        q2: "Что видно на экране?",
-        q3: "Как должно выглядеть?"
-      };
+      return { q1:"Контекст (что было открыто?)", q2:"Что видно на экране?", q3:"Как должно выглядеть?" };
     }
-    return {
-      q1: "Что ты сделал?",
-      q2: "Что произошло?",
-      q3: "Что должно было произойти?"
-    };
+    return { q1:"Что ты сделал?", q2:"Что произошло?", q3:"Что должно было произойти?" };
   }
 
   function applyDynamicLabels(){
@@ -640,15 +634,12 @@
     $("formMode").classList.toggle("hidden", mode !== "form");
     $("wizardMode").classList.toggle("hidden", mode !== "wizard");
 
-    // sync toggles
     const isWizard = (mode === "wizard");
     $("modeToggle").classList.toggle("on", isWizard);
     $("modeToggle").setAttribute("aria-pressed", String(isWizard));
-    $("modeText").textContent = isWizard ? "По шагам" : "Форма";
 
     $("modeToggle2").classList.toggle("on", isWizard);
     $("modeToggle2").setAttribute("aria-pressed", String(isWizard));
-    $("modeText2").textContent = isWizard ? "По шагам" : "Форма";
 
     if(isWizard) renderWizard();
     focusFirstInput();
@@ -828,7 +819,6 @@
     const locEn = q4 ? ruLocationToEn(q4) : "";
     steps.push(locEn ? `Open ${locEn}.` : `Open the application.`);
 
-    // универсальность для "ничего не делал": q1 может быть пустым
     const hasAction = !!cleanSpaces(q1);
     if(hasAction){
       steps.push(q1.endsWith(".") ? q1 : (q1 + "."));
@@ -1130,12 +1120,15 @@
 
   // ---------- init ----------
   on("genForm","click", generate);
+
   on("demo","click", demo);
+  on("demo2","click", demo);
 
   on("showEN","click", ()=>setResultView("en"));
   on("showRU","click", ()=>setResultView("ru"));
 
   ["newReport","newReport2","newReport3","newReport4"].forEach(id=> on(id,"click", newReport));
+
   on("resetVocab3","click", resetVocab);
   on("copy","click", copyVocab);
 
