@@ -38,7 +38,6 @@
       overflow-x:hidden;
     }
 
-    /* Stable background layer (fixes artifacts on desktop) */
     body::before{
       content:"";
       position: fixed;
@@ -54,7 +53,7 @@
     }
 
     .wrap{
-      max-width: 680px; /* было 760px — сузил ещё */
+      max-width: 680px;
       margin: 0 auto;
       padding: 18px 14px 48px;
     }
@@ -74,16 +73,16 @@
       gap:10px;
       align-items:flex-start;
       justify-content:space-between;
-      flex-wrap:wrap;
+      flex-wrap:nowrap; /* чтобы не переносилось под табы */
     }
-    .cardBody{ padding: 12px 14px 14px; } /* чуть компактнее */
+    .cardBody{ padding: 12px 14px 14px; }
 
-    /* Tabs moved into the main card */
     .tabsRow{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
       align-items:center;
+      min-width: 0;
     }
     .tab{
       border:1px solid rgba(89,195,255,.22);
@@ -99,6 +98,7 @@
       display:flex;
       align-items:center;
       gap:8px;
+      white-space: nowrap;
     }
     .tab:hover{ filter: brightness(1.06); }
     .tab:active{ transform: translateY(1px); }
@@ -159,7 +159,7 @@
       border: 1px solid rgba(140,195,255,.16);
       color: var(--text);
       border-radius: 12px;
-      padding: 10px 11px; /* чуть компактнее */
+      padding: 10px 11px;
       outline: none;
       font-size: 14px;
       line-height: 1.35;
@@ -170,7 +170,6 @@
       box-shadow: 0 0 0 4px rgba(89,195,255,.10);
     }
 
-    /* FIX: native dropdown white-on-white */
     select{
       background-color: rgba(234,242,255,.06);
       color: rgba(234,242,255,.92);
@@ -187,7 +186,10 @@
       gap: 10px;
       margin-top: 10px;
     }
-    @media (max-width:520px){ .row{ grid-template-columns: 1fr; } }
+    @media (max-width:520px){
+      .row{ grid-template-columns: 1fr; }
+      .cardHead{ flex-wrap:wrap; }
+    }
 
     .btnRow{
       display:flex;
@@ -195,7 +197,18 @@
       flex-wrap:wrap;
       margin-top: 12px;
       align-items:center;
+      justify-content:flex-start;
     }
+    .btnRow.split{
+      justify-content:space-between; /* слева основные, справа демо */
+    }
+    .btnGroup{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
     .btn{
       border:1px solid rgba(89,195,255,.25);
       color: rgba(234,242,255,.92);
@@ -239,13 +252,6 @@
       align-items:center;
       justify-content:flex-end;
     }
-    .segLabel{
-      color: var(--muted2);
-      font-size: 12px;
-      margin-right: 2px;
-      user-select:none;
-      cursor: default;
-    }
     .segBtn{
       border:1px solid rgba(234,242,255,.12);
       background: rgba(234,242,255,.06);
@@ -256,6 +262,7 @@
       font-size: 13px;
       user-select:none;
       transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
+      white-space: nowrap;
     }
     .segBtn:hover{ filter: brightness(1.06); }
     .segBtn:active{ transform: translateY(1px); }
@@ -359,7 +366,6 @@
       user-select:none;
       cursor: default;
     }
-
     .kbd{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 12px;
@@ -391,8 +397,8 @@
           </button>
         </div>
 
-        <div class="seg" id="modeSeg">
-          <span class="segLabel">Режим ввода:</span>
+        <!-- Убрали "Режим ввода:" и держим сегмент справа -->
+        <div class="seg" id="modeSeg" aria-label="Режим ввода">
           <button class="segBtn active" id="modeForm" type="button">Форма</button>
           <button class="segBtn" id="modeWizard" type="button">По шагам</button>
         </div>
@@ -454,10 +460,15 @@
               </div>
             </div>
 
-            <div class="btnRow">
-              <button class="btn primary" id="genForm" type="button">Сгенерировать</button>
-              <button class="btn ghost" id="demo" type="button">Демо</button>
-              <button class="btn" id="newReport" type="button">Новый отчёт</button>
+            <!-- Кнопки: "Новый отчёт" рядом с "Сгенерировать", "Демо" справа -->
+            <div class="btnRow split">
+              <div class="btnGroup">
+                <button class="btn primary" id="genForm" type="button">Сгенерировать</button>
+                <button class="btn" id="newReport" type="button">Новый отчёт</button>
+              </div>
+              <div class="btnGroup">
+                <button class="btn ghost" id="demo" type="button">Демо</button>
+              </div>
             </div>
           </div>
 
@@ -495,7 +506,6 @@
         <!-- RESULT PANEL -->
         <div id="panelResult" class="hidden">
           <div class="seg" style="justify-content:flex-start; margin-bottom:12px;">
-            <span class="segLabel">Показать:</span>
             <button class="segBtn active" id="showEN" type="button">EN</button>
             <button class="segBtn" id="showRU" type="button">RU</button>
           </div>
@@ -556,7 +566,6 @@
   <div class="toast" id="toast">OK</div>
 
 <script>
-  // ---------- utils ----------
   const $ = (id) => document.getElementById(id);
 
   function on(id, evt, fn){
@@ -585,24 +594,21 @@
     return [...new Set(matches)];
   }
 
-  // ---------- app state ----------
   const state = {
-    tab: "input",           // input | result | vocab
-    inputMode: "form",      // form | wizard
+    tab: "input",
+    inputMode: "form",
     wizardStep: 0,
     lastVocabLines: "",
     lastVocabCount: 0,
     demoOn: false
   };
 
-  // ---------- panels ----------
   const panels = {
     input: $("panelInput"),
     result: $("panelResult"),
     vocab: $("panelVocab")
   };
 
-  // ---------- tabs ----------
   const tabEls = {
     input: $("tabInput"),
     result: $("tabResult"),
@@ -637,7 +643,6 @@
     $("tabVocab").disabled = !enabled;
   }
 
-  // ---------- input mode switch ----------
   function setInputMode(mode){
     state.inputMode = mode;
     $("modeForm").classList.toggle("active", mode === "form");
@@ -654,7 +659,6 @@
   on("modeForm","click", ()=>setInputMode("form"));
   on("modeWizard","click", ()=>setInputMode("wizard"));
 
-  // ---------- location RU -> EN ----------
   function ruLocationToEn(locRu){
     const s = (locRu || "").trim().toLowerCase();
     const dict = new Map([
@@ -679,7 +683,6 @@
     return "the specified screen";
   }
 
-  // ---------- vocab engine ----------
   const LS_KEY = "bugTrainer_knownVocab_v4";
 
   function loadKnown(){
@@ -792,7 +795,6 @@
     return [...uniq.values()];
   }
 
-  // ---------- report generation ----------
   function guessTitle(type, uiTexts, q2ru){
     const primary = uiTexts[0] ? `"${uiTexts[0]}"` : "Button";
     if(type === "crash") return `${primary} causes the app to freeze`;
@@ -906,7 +908,6 @@
     $("sevPill").textContent = `Severity: ${data.severity}`;
     $("envPill").textContent = data.env ? `Env: ${data.env}` : "Env: —";
 
-    // vocab (dedupe)
     const known = loadKnown();
     const vocabItems = collectVocab(en);
 
@@ -952,7 +953,6 @@
     toast("Готово");
   }
 
-  // ---------- result view toggle ----------
   function setResultView(which){
     const en = (which === "en");
     $("showEN").classList.toggle("active", en);
@@ -963,7 +963,6 @@
   on("showEN","click", ()=>setResultView("en"));
   on("showRU","click", ()=>setResultView("ru"));
 
-  // ---------- new report ----------
   function newReport(){
     $("q1").value = "";
     $("q2").value = "";
@@ -975,7 +974,6 @@
 
     state.lastVocabLines = "";
     state.lastVocabCount = 0;
-
     state.demoOn = false;
 
     $("vocPill").textContent = "0";
@@ -999,7 +997,6 @@
   }
 
   function demo(){
-    // toggle: 1-й клик — заполнить, 2-й — очистить, и так по кругу
     state.demoOn = !state.demoOn;
 
     if(state.demoOn){
@@ -1048,7 +1045,6 @@
     }
   }
 
-  // ---------- wizard ----------
   const WIZ_STEPS = [
     { key:"q1", label:"Что ты сделал?", help:"", type:"textarea", placeholder:"" },
     { key:"q2", label:"Что произошло?", help:"", type:"textarea", placeholder:"" },
@@ -1136,7 +1132,6 @@
   on("wizBack","click", wizardBack);
   on("wizGen","click", generate);
 
-  // ---------- tab clicks ----------
   function bindTabClicks(){
     Object.entries(tabEls).forEach(([name, el])=>{
       el.addEventListener("click", ()=>{
@@ -1146,7 +1141,6 @@
     });
   }
 
-  // ---------- init ----------
   bindTabClicks();
   on("genForm","click", generate);
   on("demo","click", demo);
@@ -1155,7 +1149,6 @@
     on(id,"click", newReport);
   });
 
-  // кнопка сброса словаря — только в разделе “Словарь”
   on("resetVocab3","click", resetVocab);
 
   on("goVocab","click", ()=>{
