@@ -159,7 +159,7 @@
       display:flex;
       gap:10px;
       flex-wrap:wrap;
-      margin-top: 12px;
+      margin-top: 10px;
       align-items:center;
       justify-content:flex-start;
     }
@@ -173,15 +173,16 @@
     }
     .btnGroup.right{ justify-content:flex-end; }
 
+    /* ==== Smaller buttons (about 1.5x smaller) ==== */
     .btn{
       border:1px solid rgba(89,195,255,.25);
       color: rgba(234,242,255,.92);
       background: rgba(89,195,255,.10);
-      padding: 11px 14px;
-      border-radius: 14px;
+      padding: 8px 10px;          /* was 11px 14px */
+      border-radius: 12px;        /* was 14px */
       cursor:pointer;
-      font-size:14px;
-      letter-spacing:.2px;
+      font-size:13px;             /* was 14px */
+      letter-spacing:.15px;
       transition: transform .08s ease, filter .12s ease, background .12s ease, border-color .12s ease;
       user-select:none;
     }
@@ -206,9 +207,9 @@
     .btn[disabled]{ opacity:.45; cursor:not-allowed; filter:none; transform:none; }
 
     .btn.back{
-      padding: 10px 12px;
+      padding: 7px 10px;          /* smaller */
       border-radius: 999px;
-      font-size: 13px;
+      font-size: 12.5px;
       background: rgba(234,242,255,.06);
       border-color: rgba(234,242,255,.12);
       color: rgba(234,242,255,.86);
@@ -245,10 +246,10 @@
       border:1px solid rgba(234,242,255,.12);
       background: rgba(234,242,255,.06);
       color: rgba(234,242,255,.80);
-      padding: 8px 10px;
+      padding: 7px 9px;           /* smaller */
       border-radius: 999px;
       cursor:pointer;
-      font-size: 13px;
+      font-size: 12.5px;          /* smaller */
       user-select:none;
       transition: filter .12s ease, transform .08s ease, background .12s ease, border-color .12s ease;
       white-space: nowrap;
@@ -336,7 +337,12 @@
     }
 
     /* Wizard */
-    .wizardShell{ display:flex; flex-direction:column; gap:10px; }
+    .wizardShell{ display:flex; flex-direction:column; gap:8px; }
+
+    /* ==== Wizard spacing fix: make gap like in form ==== */
+    #wizardMode .q{ margin-bottom: 8px; }      /* was 14px via .q */
+    #wizardMode .btnRow{ margin-top: 6px; }    /* tighter than default */
+
   </style>
 </head>
 
