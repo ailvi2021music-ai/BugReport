@@ -64,7 +64,7 @@
     .card{
       width: 100%;
       background: linear-gradient(180deg, rgba(11,23,48,.92), rgba(10,20,43,.90));
-      border: 1px solid var(--line);
+      border: 1px solid rgba(255,255,255,.08); /* чуть легче */
       border-radius: var(--r);
       box-shadow: var(--shadow2);
       overflow:hidden;
@@ -80,13 +80,14 @@
     .cardBody{ padding: 14px; }
     .hidden{ display:none !important; }
 
+    /* ======= FLAT QUESTIONS (no inner dark frames) ======= */
     .q{
-      padding: 12px;
-      border: 1px solid rgba(140,195,255,.12);
-      border-radius: 14px;
-      background: rgba(5,9,20,.35);
-      margin-bottom: 10px;
+      padding: 6px 0;       /* вместо "карточки" */
+      margin-bottom: 14px;  /* ритм */
+      background: none;
+      border: none;
     }
+
     .q label{
       display:flex;
       gap:10px;
@@ -97,6 +98,7 @@
       user-select:none;
       cursor: default;
     }
+
     .n{
       width: 22px; height: 22px;
       border-radius: 8px;
@@ -113,7 +115,7 @@
     textarea, input, select{
       width:100%;
       background: rgba(234,242,255,.06);
-      border: 1px solid rgba(140,195,255,.16);
+      border: 1px solid rgba(255,255,255,.08); /* мягче */
       color: var(--text);
       border-radius: 12px;
       padding: 10px 11px;
@@ -121,7 +123,9 @@
       font-size: 14px;
       line-height: 1.35;
     }
+
     textarea{ min-height: 54px; resize: vertical; }
+
     textarea:focus, input:focus, select:focus{
       border-color: rgba(89,195,255,.38);
       box-shadow: 0 0 0 4px rgba(89,195,255,.10);
@@ -130,8 +134,8 @@
     select{
       background-color: rgba(234,242,255,.06);
       color: rgba(234,242,255,.92);
-      border: 1px solid rgba(140,195,255,.16);
     }
+
     select option{
       background-color: #0b162e;
       color: #eaf2ff;
@@ -154,15 +158,14 @@
       justify-content:flex-start;
     }
     .btnRow.split{ justify-content:space-between; }
+
     .btnGroup{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       align-items:center;
     }
-    .btnGroup.right{
-      justify-content:flex-end;
-    }
+    .btnGroup.right{ justify-content:flex-end; }
 
     .btn{
       border:1px solid rgba(89,195,255,.25);
@@ -178,21 +181,25 @@
     }
     .btn:hover{ filter: brightness(1.06); }
     .btn:active{ transform: translateY(1px); }
+
     .btn.primary{
       background: linear-gradient(180deg, rgba(89,195,255,.30), rgba(89,195,255,.14));
       border-color: rgba(89,195,255,.40);
       box-shadow: 0 14px 40px rgba(89,195,255,.10);
     }
+
     .btn.ghost{
       background: transparent;
       border-color: rgba(234,242,255,.12);
       color: rgba(234,242,255,.75);
     }
+
     .btn.danger{
       background: rgba(255,92,122,.10);
       border-color: rgba(255,92,122,.25);
       color: rgba(234,242,255,.88);
     }
+
     .btn[disabled]{ opacity:.45; cursor:not-allowed; filter:none; transform:none; }
 
     .btn.back{
@@ -254,10 +261,11 @@
     .outBlock{
       padding: 12px 12px 14px;
       border-radius: 14px;
-      border: 1px solid rgba(140,195,255,.12);
-      background: rgba(5,9,20,.35);
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(5,9,20,.18); /* полегче */
       margin-bottom: 10px;
     }
+
     .outTitle{
       display:flex;
       align-items:center;
@@ -269,6 +277,7 @@
       justify-content:space-between;
       flex-wrap:wrap;
     }
+
     .dot{
       width: 10px; height: 10px; border-radius: 999px;
       background: var(--accent);
@@ -288,6 +297,7 @@
       line-height: 1.45;
       color: rgba(234,242,255,.92);
     }
+
     .small{
       color: var(--muted2);
       font-size: 12px;
@@ -1025,14 +1035,6 @@
   $("wizGen").addEventListener("click", generateAI);
 
   // ========= init =========
-  function toggleReportMode(){
-    state.reportMode = (state.reportMode === "observe") ? "interact" : "observe";
-    renderReportModeUI();
-    focusFirstInput();
-  }
-  $("reportModeBtn").addEventListener("click", toggleReportMode);
-  $("reportModeBtn2").addEventListener("click", toggleReportMode);
-
   applyQuestionLayout();
   renderReportModeUI();
   setTab("input");
