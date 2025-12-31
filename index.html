@@ -10,7 +10,6 @@
     :root{
       --bg0:#050914;
       --bg1:#071221;
-      --line:rgba(140,195,255,.14);
       --text:#EAF2FF;
       --muted2:rgba(234,242,255,.55);
       --accent:#59C3FF;
@@ -23,6 +22,7 @@
     }
 
     *{ box-sizing:border-box; }
+
     html,body{ height:100%; }
 
     body{
@@ -33,12 +33,9 @@
       -webkit-font-smoothing:antialiased;
       -webkit-text-size-adjust:100%;
       overflow-x:hidden;
-
-      /* fix: caret showing in non-input areas */
-      caret-color: transparent;
     }
-    textarea, input, select{ caret-color: var(--text); }
 
+    /* фон */
     body::before{
       content:"";
       position: fixed;
@@ -51,6 +48,11 @@
         linear-gradient(180deg, var(--bg0), var(--bg1));
     }
 
+    /* ==== FIX caret bug globally: hide caret everywhere, enable only in inputs ==== */
+    *{ caret-color: transparent; }
+    textarea, input, select{ caret-color: var(--text); }
+
+    /* Layout: no big card frame; content centered */
     .wrap{
       max-width: 680px;
       margin: 0 auto;
@@ -61,29 +63,34 @@
       justify-content:center;
     }
 
+    /* Container without рамки */
     .card{
       width: 100%;
-      background: linear-gradient(180deg, rgba(11,23,48,.92), rgba(10,20,43,.90));
-      border: 1px solid rgba(255,255,255,.08); /* чуть легче */
-      border-radius: var(--r);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: visible;
     }
 
     .cardHead{
-      padding: 12px 14px 0;
-      display:flex;
-      align-items:center;
-      justify-content:flex-start;
+      display:none;
     }
 
-    .cardBody{ padding: 14px; }
+    .cardBody{
+      padding: 0;
+    }
+
     .hidden{ display:none !important; }
 
-    /* ======= FLAT QUESTIONS (no inner dark frames) ======= */
+    /* Input area: prevent text selection/caret outside fields */
+    #panelInput{ user-select: none; }
+    #panelInput textarea, #panelInput input, #panelInput select{ user-select: text; }
+
+    /* FLAT QUESTIONS */
     .q{
-      padding: 6px 0;       /* вместо "карточки" */
-      margin-bottom: 14px;  /* ритм */
+      padding: 6px 0;
+      margin-bottom: 14px;
       background: none;
       border: none;
     }
@@ -115,7 +122,7 @@
     textarea, input, select{
       width:100%;
       background: rgba(234,242,255,.06);
-      border: 1px solid rgba(255,255,255,.08); /* мягче */
+      border: 1px solid rgba(255,255,255,.08);
       color: var(--text);
       border-radius: 12px;
       padding: 10px 11px;
@@ -135,7 +142,6 @@
       background-color: rgba(234,242,255,.06);
       color: rgba(234,242,255,.92);
     }
-
     select option{
       background-color: #0b162e;
       color: #eaf2ff;
@@ -187,19 +193,16 @@
       border-color: rgba(89,195,255,.40);
       box-shadow: 0 14px 40px rgba(89,195,255,.10);
     }
-
     .btn.ghost{
       background: transparent;
       border-color: rgba(234,242,255,.12);
       color: rgba(234,242,255,.75);
     }
-
     .btn.danger{
       background: rgba(255,92,122,.10);
       border-color: rgba(255,92,122,.25);
       color: rgba(234,242,255,.88);
     }
-
     .btn[disabled]{ opacity:.45; cursor:not-allowed; filter:none; transform:none; }
 
     .btn.back{
@@ -211,7 +214,7 @@
       color: rgba(234,242,255,.86);
     }
 
-    /* ICON-ONLY controls: no halo, no frame */
+    /* ICON-ONLY controls: no halo */
     .iconBtn{
       background: transparent !important;
       border: none !important;
@@ -258,11 +261,12 @@
       color: rgba(234,242,255,.92);
     }
 
+    /* output blocks keep a gentle panel so text readable */
     .outBlock{
       padding: 12px 12px 14px;
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,.08);
-      background: rgba(5,9,20,.18); /* полегче */
+      background: rgba(5,9,20,.18);
       margin-bottom: 10px;
     }
 
@@ -317,7 +321,7 @@
       color: rgba(234,242,255,.92);
       padding: 10px 12px;
       border-radius: 14px;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow2);
       opacity: 0;
       pointer-events:none;
       transition: opacity .18s ease, transform .18s ease;
@@ -339,7 +343,6 @@
 <body>
   <div class="wrap">
     <section class="card" id="mainCard">
-
       <div class="cardHead hidden" id="cardHead">
         <button class="btn back" id="backBtn" type="button" title="Назад" aria-label="Назад">← Назад</button>
       </div>
@@ -357,12 +360,12 @@
             </div>
 
             <div class="q" id="q2Block">
-              <label><span class="n" id="n2">2</span> <span id="l2">Наблюдаемое</span></label>
+              <label><span class="n" id="n2">2</span> <span id="l2">Что не так сейчас?</span></label>
               <textarea id="q2"></textarea>
             </div>
 
             <div class="q" id="q3Block">
-              <label><span class="n" id="n3">3</span> <span id="l3">Ожидаемое</span></label>
+              <label><span class="n" id="n3">3</span> <span id="l3">Как должно быть?</span></label>
               <textarea id="q3"></textarea>
             </div>
 
@@ -400,7 +403,6 @@
               </div>
             </div>
 
-            <!-- bottom row: main buttons on the left, icon controls bottom-right -->
             <div class="btnRow split">
               <div class="btnGroup">
                 <button class="btn primary" id="genForm" type="button" title="Сгенерировать отчёт" aria-label="Сгенерировать отчёт">Сгенерировать</button>
@@ -409,10 +411,10 @@
 
               <div class="btnGroup right">
                 <button class="iconBtn" id="reportModeBtn" type="button"
-                  title="Режим репорта: увидел / действовал" aria-label="Режим репорта: увидел / действовал">👁️</button>
+                  title="Режим репорта: увидено / действовал(а)" aria-label="Режим репорта: увидено / действовал(а)">👁️</button>
 
                 <button class="iconBtn" id="toggleInputModeBtn" type="button"
-                  title="Переключить режим ввода: форма / по шагам" aria-label="Переключить режим ввода: форма / по шагам">⇄</button>
+                  title="Режим ввода: форма / по шагам" aria-label="Режим ввода: форма / по шагам">⇄</button>
 
                 <button class="iconBtn" id="demo" type="button"
                   title="Демо: заполнить / очистить" aria-label="Демо: заполнить / очистить">?</button>
@@ -428,7 +430,6 @@
                 <div id="wizField"></div>
               </div>
 
-              <!-- bottom row: wizard nav on the left, icon controls bottom-right (same line) -->
               <div class="btnRow split">
                 <div class="btnGroup">
                   <button class="btn ghost" id="wizBack" type="button" title="Назад" aria-label="Назад">Назад</button>
@@ -439,10 +440,10 @@
 
                 <div class="btnGroup right">
                   <button class="iconBtn" id="reportModeBtn2" type="button"
-                    title="Режим репорта: увидел / действовал" aria-label="Режим репорта: увидел / действовал">👁️</button>
+                    title="Режим репорта: увидено / действовал(а)" aria-label="Режим репорта: увидено / действовал(а)">👁️</button>
 
                   <button class="iconBtn" id="toggleInputModeBtn2" type="button"
-                    title="Переключить режим ввода: форма / по шагам" aria-label="Переключить режим ввода: форма / по шагам">⇄</button>
+                    title="Режим ввода: форма / по шагам" aria-label="Режим ввода: форма / по шагам">⇄</button>
 
                   <button class="iconBtn" id="demo2" type="button"
                     title="Демо: заполнить / очистить" aria-label="Демо: заполнить / очистить">?</button>
@@ -574,20 +575,6 @@
     }
   }
 
-  // ========= click empty area -> blur =========
-  function blurIfClickedOnEmptyArea(e){
-    const q = e.target.closest(".q");
-    if(!q) return;
-    const interactive = e.target.closest("textarea, input, select, button");
-    if(interactive) return;
-    const ae = document.activeElement;
-    if(ae && q.contains(ae) && /^(TEXTAREA|INPUT|SELECT)$/.test(ae.tagName)) ae.blur();
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  document.addEventListener("mousedown", blurIfClickedOnEmptyArea, true);
-  document.addEventListener("click", blurIfClickedOnEmptyArea, true);
-
   // ========= back =========
   $("backBtn").addEventListener("click", ()=>{
     if(state.tab === "vocab") setTab("result");
@@ -649,7 +636,6 @@
   // ========= question layout by mode =========
   function applyQuestionLayout(){
     const observe = state.reportMode === "observe";
-
     $("q1Block").classList.toggle("hidden", observe);
 
     const map = observe
@@ -663,8 +649,8 @@
         }
       : {
           n1:"1", l1:"Шаги / действия",
-          n2:"2", l2:"Наблюдаемое",
-          n3:"3", l3:"Ожидаемое",
+          n2:"2", l2:"Что не так сейчас?",
+          n3:"3", l3:"Как должно быть?",
           n4:"4", l4:"Где это произошло?",
           n5:"5", l5:"Насколько это критично?",
           n6:"6", l6:"Устройство / версия",
@@ -949,8 +935,8 @@
     }
     return [
       { key:"q1", label:"Шаги / действия", type:"textarea" },
-      { key:"q2", label:"Наблюдаемое", type:"textarea" },
-      { key:"q3", label:"Ожидаемое", type:"textarea" },
+      { key:"q2", label:"Что не так сейчас?", type:"textarea" },
+      { key:"q3", label:"Как должно быть?", type:"textarea" },
       { key:"q4", label:"Где это произошло?", type:"input" },
       { key:"q5", label:"Насколько это критично?", type:"select",
         options:[ ["Low","Низко"], ["Medium","Средне"], ["High","Высоко"], ["Critical","Критично"] ] },
